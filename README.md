@@ -14,6 +14,14 @@ Persönliches Dashboard für die Laufbahnqualifizierung im gehobenen landwirtsch
 - druckoptimierte PDF-/Tabellenansicht
 - lokale Speicherung der persönlichen Daten im Browser
 
+## Datenstand
+
+Die hinterlegten Termine entsprechen dem offiziellen **Ausbildungsplan Laufbahnqualifizierung** der Regierungspräsidien Karlsruhe und Freiburg (Az. 34c-8414.53 (26-28)), **Stand 15.09.2026**. Der Plan steht unter dem Vorbehalt „Änderungen vorbehalten“.
+
+Der Tab **Planvergleich** zeigt die Abweichungen gegenüber dem vorherigen Entwurf vom 04.09.2026.
+
+Beim ersten Aufruf einer neuen Planversion werden bereits eingetragene persönliche Daten übernommen: eigene Einträge (ULB-Blöcke, Verwaltungsfall, selbst angelegte Termine) sowie die Dienstreiseplanung je Termin. Die Lehrgangstermine selbst werden durch die neue Planversion ersetzt.
+
 ## Datenschutz / Speicherung
 
 Die Anwendung ist eine statische HTML-Seite. Persönlich eingetragene Daten wie ULB-Blöcke, Reiseplanung, Hotel- oder Ticketinformationen werden im `localStorage` des jeweiligen Browsers gespeichert und **nicht automatisch an GitHub übertragen**.
