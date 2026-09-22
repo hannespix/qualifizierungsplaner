@@ -1,67 +1,156 @@
-# Laufbahnqualifizierung gD Landwirtschaft – Dashboard
+# Laufbahnqualifizierung gD Landwirtschaft — Terminplan
 
-Persönliches Dashboard für die Laufbahnqualifizierung im gehobenen landwirtschaftstechnischen Dienst in Baden-Württemberg.
+Persönliches Planungswerkzeug für die Laufbahnqualifizierung im gehobenen
+landwirtschaftstechnischen Dienst in Baden-Württemberg. Das Werkzeug läuft
+vollständig im Browser, ohne Server und ohne Internetverbindung.
+
+Gestaltet nach dem **Landes-CD Baden-Württemberg** (https://design.landbw.de)
+auf Basis der gemeinsamen Vorlage `Vorlage-Tool-im-Landesdesign`. Verbindlich
+sind `CLAUDE.md` (Design + Technik) und `AGENTS.md` (Prozess).
+
+**Live-Version:** https://hannespix.github.io/qualifizierungsplaner/
+
+---
 
 ## Funktionen
 
-- Terminübersicht, Kalender und Gantt-Ansicht
-- Pflicht- und optionale Ausbildungsbausteine
-- persönliche Auswahl optionaler Veranstaltungen
-- Planung der ULB-Abordnung (8 Wochen / 40 Arbeitstage, aufteilbar)
-- Planung des Verwaltungsfalls vor der Verwaltungsprüfung
-- Dienstreisemanagement je Termin
-- iCal-/Outlook-Export mit Exportoptionen
-- druckoptimierte PDF-/Tabellenansicht
-- lokale Speicherung der persönlichen Daten im Browser
+- **Übersicht** mit den nächsten Terminen, den persönlichen Pflichtphasen und
+  der Belastung je Quartal als CI-konformes Diagramm
+- **Offene Aufgaben**: was noch zu terminieren oder zu buchen ist
+- **Gantt** auf KW-Basis, **Kalender**, **Terminliste** und **Planvergleich**
+- **Globale Suche** über alle Felder: mehrere Wörter in beliebiger Reihenfolge,
+  tippfehler- und umlauttolerant (`prufung karlsruh` findet
+  „Prüfung … Karlsruhe"), Treffer werden hervorgehoben
+- Planung der **ULB-Abordnung** (8 Wochen / 40 Arbeitstage, aufteilbar) und des
+  **Verwaltungsfalls** vor der Verwaltungsprüfung
+- **Dienstreisemanagement** je Termin inklusive Nachbereitung
+- **iCal-/Outlook-Export** und druckoptimierte **PDF-Ansicht**
+- Persönliche Daten bleiben im `localStorage` des Browsers
+
+---
+
+## Projektstruktur
+
+```
+index.html                  ← Rahmen, lädt Theme und Skripte
+bw-theme.css                ← Design-System (Single Source of Truth)
+assets/css/app.css          ← werkzeugspezifische Schicht, nur --bw-*-Tokens
+assets/js/nav.js            ← Hamburger-Navigation (gemeinsam)
+assets/js/search.js         ← globale Fuzzy-Suche (gemeinsam)
+assets/js/chart.js          ← CI-konforme SVG-Diagramme (gemeinsam)
+assets/js/lq-core.js        ← Datums-/KW-Logik, Filter, Fortschritt
+assets/js/lq-data.js        ← Ausbildungsplan und Planvergleich
+assets/js/lq-export.js      ← iCal-Erzeugung
+assets/js/lq-travel.js      ← Dienstreise-Status
+assets/js/lq-app.js         ← Oberfläche (React)
+assets/vendor/react/        ← React 16, lokal abgelegt (kein CDN)
+assets/fonts/ · assets/logo/  ← lizenzpflichtig, siehe unten
+tools/check_offline.py      ← prüft auf externe Referenzen (läuft im CI)
+tools/build_singlefile.py   ← erzeugt dist/index.html als Einzeldatei
+```
+
+---
+
+## Offline-Fähigkeit
+
+Alle Abhängigkeiten — auch React — liegen lokal im Repo. Es gibt **keine
+externen Requests**, keine CDNs, keine Web-Fonts von fremden Diensten und keine
+Telemetrie.
+
+Prüfen:
+
+```bash
+python3 tools/check_offline.py     # findet externe Lade-Referenzen
+```
+
+Der Check läuft als GitHub Action bei jedem Push und Pull Request
+(`.github/workflows/offline-check.yml`).
+
+### Auslieferung als Einzeldatei
+
+```bash
+python3 tools/build_singlefile.py  # -> dist/index.html
+```
+
+Die Einzeldatei enthält Theme, Skripte, Schriften und Bilder inline und lässt
+sich per Doppelklick öffnen — geeignet für Zero-Trust-Arbeitsplätze.
+
+---
+
+## Lizenzpflichtige Schriften und Logo
+
+**Dieses Repository ist öffentlich.** Die Schriften *BaWue Sans/Serif*
+(Luzi Type) und das RPF-Logo dürfen nicht öffentlich verteilt werden. Sie sind
+deshalb über `.gitignore` ausgeschlossen; nur die `LIZENZ.md` der beiden Ordner
+liegt im Repo.
+
+Folgen im öffentlichen Stand:
+
+- Das Theme fällt auf die definierten System-Schriften zurück.
+- Statt des Logos erscheint eine reine Wortmarke. Das Logo wird **nicht**
+  nachgebaut.
+- Die Browser-Konsole meldet für die fehlenden Dateien `404` — erwartetes
+  Verhalten, keine Fehlfunktion.
+
+Für den dienstlichen Stand die lizenzierten Dateien lokal ablegen:
+
+```
+assets/fonts/BaWueSansWeb-*.woff2 · .woff
+assets/fonts/BaWueSerifWeb-*.woff2 · .woff
+assets/logo/rpf-logo.png · rpf-logo-negativ.png
+```
+
+Danach greifen Schriften und Logo automatisch — auch im Single-File-Build, der
+sie als data:-URLs einbettet. Personenbezogene Echtdaten gehören nie ins Repo.
+
+---
+
+## Datenschutz
+
+Die Anwendung ist eine statische Seite. ULB-Blöcke, Reiseplanung, Hotel- oder
+Ticketangaben liegen ausschließlich im `localStorage` des jeweiligen Browsers
+und werden **nicht** an GitHub übertragen.
+
+Da das Repository öffentlich ist, ist alles weltweit einsehbar, was fest in den
+Quelltext geschrieben wird. Persönliche Angaben gehören daher ausschließlich in
+die Eingabefelder der Oberfläche.
+
+---
 
 ## Datenstand
 
-Die hinterlegten Termine entsprechen dem offiziellen **Ausbildungsplan Laufbahnqualifizierung** der Regierungspräsidien Karlsruhe und Freiburg (Az. 34c-8414.53 (26-28)), **Stand 15.09.2026**. Der Plan steht unter dem Vorbehalt „Änderungen vorbehalten“.
+Die hinterlegten Termine entsprechen dem offiziellen **Ausbildungsplan
+Laufbahnqualifizierung** der Regierungspräsidien Karlsruhe und Freiburg
+(Az. 34c-8414.53 (26-28)), **Stand 15.09.2026**, unter dem Vorbehalt
+„Änderungen vorbehalten". Der Reiter **Planvergleich** zeigt die Abweichungen
+gegenüber dem Entwurf vom 04.09.2026.
 
-Der Tab **Planvergleich** zeigt die Abweichungen gegenüber dem vorherigen Entwurf vom 04.09.2026.
+Beim ersten Aufruf einer neuen Planversion bleiben persönliche Eintragungen
+erhalten: eigene Termine, ULB-Blöcke, Verwaltungsfall und die Reiseplanung je
+Termin. Die Lehrgangstermine selbst ersetzt die neue Planversion.
 
-Beim ersten Aufruf einer neuen Planversion werden bereits eingetragene persönliche Daten übernommen: eigene Einträge (ULB-Blöcke, Verwaltungsfall, selbst angelegte Termine) sowie die Dienstreiseplanung je Termin. Die Lehrgangstermine selbst werden durch die neue Planversion ersetzt.
+---
 
-## Datenschutz / Speicherung
+## Lokale Nutzung und Entwicklung
 
-Die Anwendung ist eine statische HTML-Seite. Persönlich eingetragene Daten wie ULB-Blöcke, Reiseplanung, Hotel- oder Ticketinformationen werden im `localStorage` des jeweiligen Browsers gespeichert und **nicht automatisch an GitHub übertragen**.
+`index.html` lässt sich direkt im Browser öffnen. Für die Entwicklung ist ein
+einfacher Webserver bequemer:
 
-Wichtig: Dieses Repository ist **öffentlich**. Alles, was direkt in `index.html` fest hinterlegt ist, ist damit über GitHub und die GitHub-Pages-Seite weltweit einsehbar. Persönliche Angaben gehören daher ausschließlich in die Browser-Eingabefelder (`localStorage`), nicht in den Quelltext.
+```bash
+python3 -m http.server 8000     # dann http://localhost:8000 öffnen
+```
 
-## Live-Version
+Es sind keine Build-Schritte und keine Laufzeit-Abhängigkeiten nötig.
 
-**https://hannespix.github.io/qualifizierungsplaner/**
+---
 
 ## GitHub Pages
 
-Das Deployment läuft automatisch über GitHub Actions. Bei jedem Push auf `main`
-startet der Workflow **Deploy GitHub Pages** (`.github/workflows/pages.yml`) und
-veröffentlicht den Repository-Inhalt.
-
-Der Workflow aktiviert GitHub Pages über `actions/configure-pages` mit
-`enablement: true` selbst. Sollte das an fehlenden Berechtigungen scheitern,
-lässt sich Pages einmalig manuell einschalten:
+Das Deployment läuft über GitHub Actions (`.github/workflows/pages.yml`) bei
+jedem Push auf `main`. Der Workflow aktiviert Pages über
+`actions/configure-pages` mit `enablement: true` selbst. Falls das an
+Berechtigungen scheitert, Pages einmalig manuell einschalten:
 
 1. **Settings → Pages** öffnen.
 2. Unter **Build and deployment → Source** **GitHub Actions** auswählen.
-3. Den Workflow unter **Actions → Deploy GitHub Pages** erneut starten
-   (**Run workflow**).
-
-Zusätzlich benötigt der Workflow unter **Settings → Actions → General →
-Workflow permissions** keine Sonderrechte – die nötigen Rechte (`pages: write`,
-`id-token: write`) setzt er selbst.
-
-## Aktualisieren
-
-Für eine neue Dashboard-Version einfach `index.html` ersetzen und auf `main` pushen. GitHub Pages wird automatisch neu veröffentlicht.
-
-## Lokale Nutzung
-
-`index.html` kann weiterhin direkt lokal im Browser geöffnet werden. Es sind keine Build-Schritte und keine externen Laufzeit-Abhängigkeiten erforderlich.
-
-## Dateien
-
-- `index.html` – vollständiges Dashboard
-- `.nojekyll` – verhindert eine unnötige Jekyll-Verarbeitung
-- `.github/workflows/pages.yml` – automatisches GitHub-Pages-Deployment
-- `.gitignore` – ignoriert typische lokale Systemdateien
+3. Den Workflow unter **Actions → Deploy GitHub Pages** erneut starten.
