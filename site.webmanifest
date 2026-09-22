@@ -1,0 +1,14 @@
+{
+  "name": "Laufbahnqualifizierung gD Landwirtschaft — Terminplan",
+  "short_name": "Laufbahnplan",
+  "lang": "de",
+  "description": "Persönlicher Terminplan der Laufbahnqualifizierung. Alle Daten bleiben lokal im Browser.",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFC00",
+  "icons": [
+    { "src": "assets/favicons/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

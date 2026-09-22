@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Laufbahnqualifizierung">
+  <!-- Neutrales Platzhalter-Favicon in den Markenfarben (Gelb-Fläche,
+       dunkle Kontur). KEIN Nachbau des Landes-/RPF-Logos. Liegt das
+       offizielle Favicon-Paket vor, ersetzt es diese Datei. -->
+  <rect width="32" height="32" fill="#FFFC00"/>
+  <rect x="1" y="1" width="30" height="30" fill="none" stroke="#2A2623" stroke-width="2"/>
+  <path d="M9 8v13h5 M18 8h5 M20.5 8v13" fill="none" stroke="#2A2623" stroke-width="3" stroke-linecap="square"/>
+</svg>

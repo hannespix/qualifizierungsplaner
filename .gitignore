@@ -1,3 +1,24 @@
+# Build-Ausgabe
+/dist/
+
+# OS / Editor
 .DS_Store
 Thumbs.db
 *.log
+*.swp
+.idea/
+.vscode/
+
+# Secrets / lokale Konfig — NIEMALS committen
+.env
+*.key
+*.pem
+
+# --- Lizenzpflichtige Assets ---------------------------------------------
+# Dieses Repo ist ÖFFENTLICH. Die BaWue-Schriften (Luzi Type) und das
+# RPF-Logo dürfen nicht öffentlich verteilt werden — siehe die LIZENZ.md
+# in den jeweiligen Ordnern. Lokal abgelegt werden sie automatisch genutzt.
+assets/fonts/*
+!assets/fonts/LIZENZ.md
+assets/logo/*
+!assets/logo/LIZENZ.md
