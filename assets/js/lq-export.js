@@ -43,7 +43,7 @@
   }
   function buildICS(events,opt,helpers){
     opt=Object.assign({prefix:'',statusPrefix:false,privacy:'PRIVATE',busyStatus:'BUSY',timeMode:'allday',fixedStart:'08:30',fixedEnd:'16:30',includeLocation:true,includeDescription:true},opt||{});helpers=helpers||{};
-    var out=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//LQ Dashboard V2.7//DE','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+    var out=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//LQ Dashboard V2.8//DE','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
     (events||[]).filter(function(e){return e&&e.start&&e.end}).forEach(function(e){
       if(opt.timeMode==='fixedDaily'){
         var st=compactTime(opt.fixedStart),et=compactTime(opt.fixedEnd);if(!st||!et){st='083000';et='163000'};
