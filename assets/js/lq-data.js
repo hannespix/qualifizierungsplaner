@@ -14,7 +14,7 @@
   function makeDefaultEvents() {
     return [
       base({ id:'start', title:'Ausbildungsbeginn gD', start:'2026-11-01', end:'2026-11-01', sourceKW:'44', category:'Organisation', obligation:'Pflicht', kind:'milestone', location:'Stammdienststelle', notes:'Formaler Ausbildungsbeginn gD laut Ausbildungsplan. Deine Qualifizierungszeit beginnt laut Einladung des MLR vom 16.09.2026 allerdings erst mit dem ersten zentralen Lehrgang an der LEL am 09.11.2026.' }),
-      base({ id:'gaestehaus', title:'Frist: Zimmer im Gästehaus der LEL anfragen', start:'2026-10-16', end:'2026-10-16', sourceKW:'42', category:'Organisation', obligation:'Pflicht', kind:'milestone', relevance:'Qualifizierer', location:'fortbildung@lel.bwl.de', travel:{required:'no'}, notes:'Reservierungsanfrage für den ersten Ausbildungsblock bis spätestens 16.10.2026 per Mail an das Fortbildungsteam der LEL. Einzelappartement derzeit 40 €/Nacht, Buchung nur wochenweise und verbindlich; die Kosten laufen über die Reisekostenabrechnung. Für die weiteren Lehrgangswochen meldest du dich nach dem ersten Block über Abteilung 1 an – Abmeldung spätestens 5 Werktage vorher, sonst wird berechnet.' }),
+      base({ id:'gaestehaus', title:'Frist: Zimmer im Gästehaus der LEL anfragen', start:'2026-10-16', end:'2026-10-16', sourceKW:'42', category:'Organisation', obligation:'Pflicht', kind:'milestone', aufgabe:true, vorlage:'gh-erster', relevance:'Qualifizierer', location:'fortbildung@lel.bwl.de', travel:{required:'no'}, notes:'Reservierungsanfrage für den ersten Ausbildungsblock bis spätestens 16.10.2026 per Mail an das Fortbildungsteam der LEL. Einzelappartement derzeit 40 €/Nacht, Buchung nur wochenweise und verbindlich; die Kosten laufen über die Reisekostenabrechnung. Für die weiteren Lehrgangswochen meldest du dich nach dem ersten Block über Abteilung 1 an – Abmeldung spätestens 5 Werktage vorher, sonst wird berechnet.' }),
       base({ id:'lel46', title:'Kommunikation, Allgemeine Landwirtschaft', start:'2026-11-09', end:'2026-11-13', sourceKW:'46', category:'LEL', location:'LEL', notes:'Pflichtlehrgang (im Ausbildungsplan gelb markiert). Eröffnung am Montag, 09.11.2026, mit RP + MLR – damit beginnt laut Einladung deine Qualifizierungszeit.' }),
       base({ id:'mentor47', title:'Besprechung für Mentorinnen und Mentoren gD (online)', start:'2026-11-16', end:'2026-11-20', sourceKW:'47', category:'Organisation', relevance:'Anwärter', obligation:'Offen', location:'online', notes:'Offizieller Plan: „Termin noch offen, nicht für LQ“. Für dich als Qualifizierer ausdrücklich nicht relevant.' }),
 
@@ -47,10 +47,47 @@
   }
 
 
+  // Fakten für Dienstreisen und Unterkunft – jeweils mit Quelle. Nur
+  // funktionale Adressen: Namen und Durchwahlen einzelner Beschäftigter
+  // gehören nicht in dieses öffentliche Repository.
+  const QUELLEN = {
+    gaestehaus: { titel:'Informationsblatt „Übernachten im Gästehaus der LEL“, Stand September 2026 (Anlage 3 zur Einladung)' },
+    einladung: { titel:'Einladung des MLR vom 16.09.2026, Az. MLR21-8414-90/7/1' },
+    apro: { titel:'APrOLW gD (Anlage 1 zur Einladung)' },
+    lbvGenehmigung: { titel:'LBV Baden-Württemberg: Genehmigung', url:'https://lbv.landbw.de/-/genehmigung' },
+    lbvAbrechnung: { titel:'LBV Baden-Württemberg: Antrag auf Reisekostenvergütung', url:'https://lbv.landbw.de/-/antrag-auf-reisekostenvergutung' },
+    lbvFrist: { titel:'LBV Baden-Württemberg: Fristen', url:'https://lbv.landbw.de/-/frist-1' },
+    lrkg: { titel:'Landesreisekostengesetz und VwV LRKG', url:'https://www.besoldung-baden-wuerttemberg.de/beamtenrecht_in_baden_wuerttemberg/reisekosten-in-baden-wuerttemberg/35220' },
+    lelAnfahrt: { titel:'LEL: Anfahrt und Lage', url:'https://lel.landwirtschaft-bw.de/,Lde/Startseite/Wir+ueber+uns/Anfahrt+und+Lage+der+LEL' },
+  };
+
+  const KONTAKTE = {
+    lelFortbildung: 'fortbildung@lel.bwl.de',
+    lelPoststelle: 'poststelle@lel.bwl.de',
+    lelTelefon: '07171 917-100',
+    lelAdresse: 'Europaplatz 1, 73525 Schwäbisch Gmünd',
+    gaestehausAdresse: 'Oberbettringer Straße 174, 73525 Schwäbisch Gmünd',
+    aktenzeichen: 'MLR21-8414-90/7/1',
+  };
+
+  // Ablauf einer Dienstreise, in der Reihenfolge der Schritte.
+  const ABLAUF = [
+    { schritt:'Genehmigen lassen', text:'Antrag in DRIVE-BW unter „Dienstreise beantragen“ stellen. Genehmigen muss deine unmittelbare Vorgesetzte oder dein unmittelbarer Vorgesetzter – grundsätzlich vor Reisebeginn. Nur wenn DRIVE-BW nicht nutzbar ist: Vordruck LBV 1201. Allgemeine Dienstreisegenehmigungen sind vorgesehen – für die wiederkehrenden Lehrgänge lohnt die Nachfrage.', quelle:'lbvGenehmigung' },
+    { schritt:'Fahrt buchen', text:'Standard sind öffentliche Verkehrsmittel; Fahrpreisermäßigungen wie eine BahnCard sind zu nutzen. Dienstwagen oder Privat-PKW nur mit triftigem Grund. Wer Bahntickets und Dienstwagen bei deiner Dienststelle bucht, regeln die Unterlagen nicht – das klärst du intern (Vorlage „Dienstreisen klären“).', quelle:'lrkg' },
+    { schritt:'Unterkunft reservieren', text:'Gästehaus der LEL, derzeit 40 € pro Nacht, nur wochenweise und verbindlich. Erster Block: Anfrage bis 16.10.2026 per Mail an das Fortbildungsteam. Weitere Wochen: nach dem ersten Block bei Abteilung 1 anmelden. Abmelden spätestens 5 Werktage vor dem Lehrgang, sonst wird das Zimmer berechnet. Übernachtungskosten sind laut LRKG bis 95 € pro Nacht im Inland erstattungsfähig.', quelle:'gaestehaus' },
+    { schritt:'Abrechnen', text:'In DRIVE-BW unter „Reisekosten abrechnen“ – innerhalb von 6 Monaten nach Ende der Dienstreise. Die Gästehaus-Rechnung kommt nach dem Lehrgang. Alle Reisekosten trägt laut Einladung deine Dienststelle.', quelle:'lbvFrist' },
+  ];
+
+  const VOR_ORT = [
+    { titel:'Unterkunft', text:'Gästehaus der LEL, Oberbettringer Straße 174, direkt neben der LEL. 22 Einzelappartements (ca. 17 m²) mit eigenem Bad, Bettwäsche, Handtüchern und Endreinigung; Gemeinschaftsküche auf der Etage. Schlüssel gibt es am ersten Lehrgangstag an der LEL. Anreise am Vorabend bitte bei der Reservierung angeben.', quelle:'gaestehaus' },
+    { titel:'Verpflegung', text:'Die Kantine bietet in der Regel an vier Tagen Mittagessen, nach Voranmeldung vergünstigt (derzeit 6,30 €). Öffnungstage und Speiseplan kommen vor den Lehrgangswochen. Im Gästehaus kannst du dich selbst versorgen; Bäckerei im Erdgeschoss, Supermarkt ca. 17 Minuten zu Fuß.', quelle:'gaestehaus' },
+    { titel:'Anreise', text:'Mit der Bahn: ab Omnibusbahnhof Schwäbisch Gmünd Linie 1 Richtung Heubach/Oberbettringen bis Haltestelle Hardt/Zwerenbergstraße, ca. 20 Minuten. Mit dem Auto: kostenfreier Parkplatz der LEL.', quelle:'lelAnfahrt' },
+  ];
+
   const REQUIREMENTS = {
     ulb8: { id:'ulb8', title:'ULB-Abordnung', targetDays:40, targetWeeks:8 },
     caseprep2w: { id:'caseprep2w', title:'Fallbearbeitung Verwaltungsprüfung an ULB', targetWeeks:2 },
   };
 
-  globalThis.LQData = { makeDefaultEvents, REQUIREMENTS };
+  globalThis.LQData = { makeDefaultEvents, REQUIREMENTS, QUELLEN, KONTAKTE, ABLAUF, VOR_ORT };
 })();
