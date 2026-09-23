@@ -115,11 +115,11 @@
 
 /* ===================== Kategorie-Kennzeichnung ===================== */
 /* Grau-Basis, sparsame Nebenfarben, Gelb nur für "offen / zu tun". */
-.badge-mandatory, .gantt-bar.mandatory, .cal-event.mandatory, .lq-swatch.mandatory { --lq-kat: var(--bw-cat-1); --lq-kat-auf: var(--bw-weiss); }
-.badge-optional,  .gantt-bar.optional,  .cal-event.optional,  .lq-swatch.optional  { --lq-kat: var(--bw-cat-2); --lq-kat-auf: var(--bw-weiss); }
-.badge-prep,      .gantt-bar.prep,      .cal-event.prep,      .lq-swatch.prep      { --lq-kat: var(--bw-cat-3); --lq-kat-auf: var(--bw-weiss); }
-.badge-ulb,       .gantt-bar.ulb,       .cal-event.ulb,       .lq-swatch.ulb       { --lq-kat: var(--bw-cat-5); --lq-kat-auf: var(--bw-weiss); }
-.badge-exam,      .gantt-bar.exam,      .cal-event.exam,      .lq-swatch.exam      { --lq-kat: var(--bw-cat-6); --lq-kat-auf: var(--bw-weiss); }
+.badge-mandatory, .cal-event.mandatory, .lq-swatch.mandatory { --lq-kat: var(--bw-cat-1); --lq-kat-auf: var(--bw-weiss); }
+.badge-optional,  .cal-event.optional,  .lq-swatch.optional  { --lq-kat: var(--bw-cat-2); --lq-kat-auf: var(--bw-weiss); }
+.badge-prep,      .cal-event.prep,      .lq-swatch.prep      { --lq-kat: var(--bw-cat-3); --lq-kat-auf: var(--bw-weiss); }
+.badge-ulb,       .cal-event.ulb,       .lq-swatch.ulb       { --lq-kat: var(--bw-cat-5); --lq-kat-auf: var(--bw-weiss); }
+.badge-exam,      .cal-event.exam,      .lq-swatch.exam      { --lq-kat: var(--bw-cat-6); --lq-kat-auf: var(--bw-weiss); }
 
 .badge {
   display: inline-flex; align-items: center; gap: 0.3em;
@@ -246,60 +246,6 @@
 .eventtitle { font-weight: 700; }
 .eventbadges { display: flex; gap: var(--bw-space-1); align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 
-/* ===================== Gantt ======================================= */
-.gantt-tools { align-items: center; }
-.toolset { display: flex; gap: var(--bw-space-1); flex-wrap: wrap; align-items: center; }
-.toolset select { width: auto; min-width: 11rem; }
-.seg { display: flex; border: 1px solid var(--bw-grau-300); border-radius: var(--bw-radius); overflow: hidden; }
-.seg button {
-  border: 0; border-left: 1px solid var(--bw-grau-300); background: var(--bw-weiss);
-  padding: 0 var(--bw-space-2); min-height: var(--lq-tt); white-space: nowrap;
-  color: var(--bw-text); cursor: pointer; font: inherit; font-weight: 700;
-}
-.seg button:first-child { border-left: 0; }
-.seg button:hover { background: var(--bw-grau-100); }
-.seg button.active { background: var(--bw-schwarz); color: var(--bw-weiss); }
-.seg.small button { font-size: var(--bw-fs-klein); }
-
-.gantt-wrap { display: grid; grid-template-columns: 18rem minmax(0, 1fr); min-height: 32rem; max-height: 42rem; }
-.gantt-labels { border-right: var(--lq-zeile); background: var(--bw-weiss); z-index: 2; }
-.gantt-corner, .week-head { height: var(--bw-space-8); border-bottom: var(--lq-zeile); background: var(--bw-grau-50); }
-.gantt-corner { display: flex; align-items: center; padding: 0 var(--bw-space-2); font-size: var(--bw-fs-mini); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--bw-text-leise); }
-.gantt-label {
-  height: 3.625rem; width: 100%; border: 0; border-bottom: var(--lq-zeile);
-  background: var(--bw-weiss); text-align: left; padding: var(--bw-space-1);
-  cursor: pointer; display: grid; grid-template-columns: 3.5rem minmax(0, 1fr);
-  grid-template-rows: auto auto; gap: 2px var(--bw-space-1); align-content: center;
-  font: inherit; color: var(--bw-text); overflow: hidden;
-}
-.gantt-label:hover { background: var(--bw-grau-50); }
-.gantt-label b { grid-column: 1; grid-row: 1; font-size: var(--bw-fs-mini); color: var(--bw-text-leise); font-variant-numeric: tabular-nums; }
-.gantt-label > span:not(.gantt-label__marken) { grid-column: 2; grid-row: 1; font-size: var(--bw-fs-klein); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gantt-label__marken { grid-column: 2; grid-row: 2; display: flex; gap: var(--bw-space-1); align-items: center; min-width: 0; overflow: hidden; }
-.gantt-scroll { overflow: auto; overscroll-behavior: contain; }
-.gantt-canvas { min-width: 100%; position: relative; }
-.week-head { display: flex; position: sticky; top: 0; z-index: 3; }
-.week-cell { flex: 0 0 auto; border-right: var(--lq-zeile); padding: var(--bw-space-1); display: flex; flex-direction: column; justify-content: center; }
-.week-cell b { font-size: var(--bw-fs-mini); font-variant-numeric: tabular-nums; }
-.week-cell span { font-size: var(--bw-fs-mini); color: var(--bw-text-leise); }
-.gantt-row { height: 3.625rem; position: relative; border-bottom: var(--lq-zeile); }
-.gridweeks { position: absolute; inset: 0; display: flex; }
-.gridweeks i { height: 100%; flex: 0 0 auto; border-right: 1px solid var(--bw-grau-100); }
-.gantt-bar {
-  position: absolute; top: var(--bw-space-2); height: var(--bw-space-4);
-  border: 1px solid var(--bw-chart-outline); border-radius: var(--bw-chart-radius);
-  background: var(--lq-kat, var(--bw-cat-1)); color: var(--lq-kat-auf, var(--bw-weiss));
-  text-align: left; padding: 0 var(--bw-space-1); cursor: pointer; overflow: hidden;
-  min-width: var(--bw-space-2); font: inherit;
-}
-.gantt-bar span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 700; font-size: var(--bw-fs-mini); }
-/* Optional zusätzlich schraffiert (Zusatzcodierung neben der Helligkeit) */
-.gantt-bar.optional {
-  background-image: repeating-linear-gradient(135deg,
-    var(--bw-grau-200) 0 6px, var(--bw-grau-300) 6px 12px);
-  color: var(--bw-schwarz);
-}
-
 /* ===================== Kalender ==================================== */
 .calendar-panel { overflow: auto; }
 .calnav { padding: var(--bw-space-2) var(--bw-space-3); display: flex; align-items: center; justify-content: space-between; gap: var(--bw-space-2); border-bottom: var(--lq-zeile); }
@@ -329,21 +275,6 @@
 .row-note { font-size: var(--bw-fs-mini); color: var(--bw-text-leise); margin-top: 3px; max-width: 45rem; }
 .ok { color: var(--bw-erfolg); font-weight: 700; }
 .warn { color: var(--bw-schwarz); background: var(--bw-gelb); font-weight: 700; padding: 0 0.3em; }
-
-/* ===================== Planvergleich =============================== */
-.compare-row {
-  display: grid; grid-template-columns: minmax(14rem, 1.6fr) 5rem 1.5rem 5rem 7rem minmax(12rem, 1fr);
-  gap: var(--bw-space-2); align-items: center;
-  padding: var(--bw-space-2) var(--bw-space-3); border-bottom: var(--lq-zeile);
-}
-.compare-name { font-weight: 700; }
-.kwpill { padding: var(--bw-space-1); text-align: center; font-weight: 700; font-size: var(--bw-fs-klein); font-variant-numeric: tabular-nums; }
-.kwpill.old { background: var(--bw-grau-100); color: var(--bw-text-leise); text-decoration: line-through; }
-/* Gelb markiert nur die tatsächlich verschobenen Wochen. */
-.kwpill.next { background: var(--bw-weiss); color: var(--bw-schwarz); border: 1px solid var(--bw-grau-300); }
-.kwpill.next.geaendert { background: var(--bw-gelb); border-color: var(--bw-schwarz); }
-.arrow { text-align: center; color: var(--bw-grau-500); }
-.compare-note { font-size: var(--bw-fs-mini); color: var(--bw-text-leise); }
 
 /* ===================== Diagramm ==================================== */
 .lq-diagramm { padding: var(--bw-space-3); }
@@ -441,15 +372,10 @@
   .lq-kennzahl:nth-child(-n+2) { border-top: 0; }
 }
 @media (max-width: 900px) {
-  .gantt-wrap { grid-template-columns: 11rem minmax(0, 1fr); }
-  .gantt-label { grid-template-columns: 3rem minmax(0, 1fr); padding: var(--bw-space-1) 0.4rem; }
-  .gantt-label__marken .badge { display: none; }
   .timeline-card { grid-template-columns: 8rem minmax(0, 1fr); }
   .timeline-card .eventbadges { grid-column: 2; justify-content: flex-start; }
   .travel-row { grid-template-columns: minmax(0, 1fr) auto; }
   .travel-row .when { grid-column: 1 / -1; }
-  .compare-row { grid-template-columns: minmax(10rem, 1fr) 4.5rem 1.5rem 4.5rem; }
-  .compare-row > .badge, .compare-note { grid-column: 1 / -1; }
   .settings-sections, .export-grid, .formgrid, .travel-grid { grid-template-columns: 1fr; }
   .field.wide, .travel-section, .travel-checks, .field.travel-note, .travel-help { grid-column: 1; }
   .settings-card:first-child, .settings-card:nth-child(2) { grid-column: 1; }
@@ -465,7 +391,6 @@
   .travel-kpi:first-child { border-top: 0; }
   .timeline-card { grid-template-columns: 1fr; gap: var(--bw-space-1); }
   .timeline-card .eventbadges { grid-column: 1; }
-  .gantt-wrap { grid-template-columns: 8.5rem minmax(0, 1fr); }
   .cols-grid, .export-summary, .time-row { grid-template-columns: 1fr; }
   .lq-werkzeugleiste .bw-search, .lq-werkzeugleiste .lq-jahr, .lq-werkzeugleiste .btn { flex: 1 1 100%; max-width: none; width: 100%; }
   .lq-werkzeugleiste-trenner { display: none; }

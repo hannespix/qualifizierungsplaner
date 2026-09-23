@@ -17,7 +17,7 @@ sind `CLAUDE.md` (Design + Technik) und `AGENTS.md` (Prozess).
 - **Übersicht** mit den nächsten Terminen, den persönlichen Pflichtphasen und
   der Belastung je Quartal als CI-konformes Diagramm
 - **Offene Aufgaben**: was noch zu terminieren oder zu buchen ist
-- **Gantt** auf KW-Basis, **Kalender**, **Terminliste** und **Planvergleich**
+- **Kalender** und **Terminliste**, jeweils auf KW-Basis
 - **Globale Suche** über alle Felder: mehrere Wörter in beliebiger Reihenfolge,
   tippfehler- und umlauttolerant (`prufung karlsruh` findet
   „Prüfung … Karlsruhe"), Treffer werden hervorgehoben
@@ -39,7 +39,7 @@ assets/js/nav.js            ← Hamburger-Navigation (gemeinsam)
 assets/js/search.js         ← globale Fuzzy-Suche (gemeinsam)
 assets/js/chart.js          ← CI-konforme SVG-Diagramme (gemeinsam)
 assets/js/lq-core.js        ← Datums-/KW-Logik, Filter, Fortschritt
-assets/js/lq-data.js        ← Ausbildungsplan und Planvergleich
+assets/js/lq-data.js        ← Ausbildungsplan (Termine und Anforderungen)
 assets/js/lq-export.js      ← iCal-Erzeugung
 assets/js/lq-travel.js      ← Dienstreise-Status
 assets/js/lq-app.js         ← Oberfläche (React)
@@ -121,9 +121,16 @@ die Eingabefelder der Oberfläche.
 
 Die hinterlegten Termine entsprechen dem offiziellen **Ausbildungsplan
 Laufbahnqualifizierung** der Regierungspräsidien Karlsruhe und Freiburg
-(Az. 34c-8414.53 (26-28)), **Stand 15.09.2026**, unter dem Vorbehalt
-„Änderungen vorbehalten". Der Reiter **Planvergleich** zeigt die Abweichungen
-gegenüber dem Entwurf vom 04.09.2026.
+(Az. 34c-8414.53 (26-28)), **Stand 15.09.2026** – Anlage 2 zur Einladung des
+MLR vom 16.09.2026 (Az. MLR21-8414-90/7/1), unter dem Vorbehalt
+„Änderungen vorbehalten".
+
+Welche LEL-Lehrgänge tatsächlich zu besuchen sind, ergibt sich aus der **gelben
+Markierung** im Ausbildungsplan; der Lehrgang Verwaltung am RP Karlsruhe kommt
+laut Einladung verpflichtend hinzu. Die Ausbildungswoche am RP Karlsruhe (KW 9)
+und die Wahlstationen sind fakultativ. Ergänzend berücksichtigt: APrOLW gD
+(§ 4 und § 22 Abs. 3) sowie das Informationsblatt zum Gästehaus der LEL
+(Reservierungsanfrage für den ersten Block bis 16.10.2026).
 
 Beim ersten Aufruf einer neuen Planversion bleiben persönliche Eintragungen
 erhalten: eigene Termine, ULB-Blöcke, Verwaltungsfall und die Reiseplanung je

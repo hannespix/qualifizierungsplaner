@@ -159,24 +159,6 @@
     };
   }
 
-  function toGanttTask(event) {
-    return {
-      id: event.id,
-      text: event.title,
-      start: parseDateOnly(event.start),
-      end: parseDateOnly(event.end),
-      duration: inclusiveDays(event.start, event.end),
-      progress: 0,
-      type: event.kind === 'milestone' ? 'milestone' : (event.category === 'Prüfung' ? 'exam' : (event.obligation === 'Optional' ? 'optional' : (event.category === 'Prüfungsvorbereitung' ? 'prep' : 'mandatory'))),
-      lazy: false,
-      kw: `KW ${event.sourceKW || computedKW(event)}`,
-      status: event.obligation || 'Offen',
-      ort: event.location || '–',
-      category: event.category || 'Sonstiges',
-      sourceId: event.id,
-    };
-  }
-
   function formatRange(start, end, locale = 'de-DE') {
     const fmt = new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
     if (start === end) return fmt.format(parseDateOnly(start));
@@ -220,6 +202,5 @@
     splitWorkWeek,
     timelinePercent,
     timelineSpan,
-    toGanttTask,
   };
 })();
