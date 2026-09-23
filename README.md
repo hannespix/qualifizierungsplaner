@@ -14,18 +14,30 @@ sind `CLAUDE.md` (Design + Technik) und `AGENTS.md` (Prozess).
 
 ## Funktionen
 
-- **Übersicht** mit den nächsten Terminen, den persönlichen Pflichtphasen und
-  der Belastung je Quartal als CI-konformes Diagramm
-- **Offene Aufgaben**: was noch zu terminieren oder zu buchen ist
-- **Kalender** und **Terminliste**, jeweils auf KW-Basis
+- **Übersicht**: der nächste Termin, eine Liste „Zu erledigen“ mit Fristen und
+  direktem Sprung zur passenden E-Mail-Vorlage, darunter die kommenden Termine
+- **Filter** nach Teilnehmer (Qualifizierer, Anwärter, alle) und Status
+  (Pflicht, optional, offen) – gilt für Übersicht, Termine und Kalender
+- **Termine** als Tabelle und **Kalender** mit den gesetzlichen Feiertagen in
+  Baden-Württemberg
+- **Dienstreisen**: pro Termin vier Schritte zum Abhaken – Genehmigung
+  (Antrag in DRIVE-BW, genehmigt), Fahrt (Bahnticket gebucht oder Dienstwagen
+  reserviert), Unterkunft (Gästehaus, Hotel; reserviert, Anreise am Vorabend)
+  und Abrechnung – mit den Fristen für die Zimmer-Abmeldung und die
+  Reisekostenabrechnung
+- **E-Mail-Vorlagen** für alle Vorgänge: Gästehaus (erster Block, weitere
+  Wochen, Abmeldung, Mittagessen), Dienstreisen (Genehmigung und Buchungsweg
+  klären, Antrag ankündigen, Dienstwagen), Lehrgänge (BW-I-Tage erfragen,
+  fakultative Bausteine) und ULB-Abordnung (Anfrage, Meldung an die
+  Prüfungsbehörde). Öffnen im Mailprogramm oder Text kopieren.
 - **Globale Suche** über alle Felder: mehrere Wörter in beliebiger Reihenfolge,
   tippfehler- und umlauttolerant (`prufung karlsruh` findet
   „Prüfung … Karlsruhe"), Treffer werden hervorgehoben
 - Planung der **ULB-Abordnung** (8 Wochen / 40 Arbeitstage, aufteilbar) und des
   **Verwaltungsfalls** vor der Verwaltungsprüfung
-- **Dienstreisemanagement** je Termin inklusive Nachbereitung
 - **iCal-/Outlook-Export** und druckoptimierte **PDF-Ansicht**
-- Persönliche Daten bleiben im `localStorage` des Browsers
+- Persönliche Daten – auch Absender und Ansprechpersonen für die Vorlagen –
+  bleiben im `localStorage` des Browsers
 
 ---
 
@@ -39,9 +51,10 @@ assets/js/nav.js            ← Hamburger-Navigation (gemeinsam)
 assets/js/search.js         ← globale Fuzzy-Suche (gemeinsam)
 assets/js/chart.js          ← CI-konforme SVG-Diagramme (gemeinsam)
 assets/js/lq-core.js        ← Datums-/KW-Logik, Filter, Fortschritt
-assets/js/lq-data.js        ← Ausbildungsplan (Termine und Anforderungen)
+assets/js/lq-data.js        ← Ausbildungsplan, Fakten zu Reise und Unterkunft mit Quellen
 assets/js/lq-export.js      ← iCal-Erzeugung
-assets/js/lq-travel.js      ← Dienstreise-Status
+assets/js/lq-travel.js      ← Dienstreise-Schritte, Fristen, Feiertage BW
+assets/js/lq-mail.js        ← E-Mail-Vorlagen
 assets/js/lq-app.js         ← Oberfläche (React)
 assets/vendor/react/        ← React 16, lokal abgelegt (kein CDN)
 assets/fonts/ · assets/logo/  ← lizenzpflichtig, siehe unten
@@ -114,6 +127,34 @@ und werden **nicht** an GitHub übertragen.
 Da das Repository öffentlich ist, ist alles weltweit einsehbar, was fest in den
 Quelltext geschrieben wird. Persönliche Angaben gehören daher ausschließlich in
 die Eingabefelder der Oberfläche.
+
+---
+
+## Dienstreisen und Unterkunft – was gilt
+
+| Frage | Antwort | Quelle |
+| --- | --- | --- |
+| Wer genehmigt? | Die unmittelbare Vorgesetzte oder der unmittelbare Vorgesetzte, grundsätzlich **vor Reisebeginn**. Antrag in DRIVE-BW unter „Dienstreise beantragen“, ersatzweise Vordruck LBV 1201. Allgemeine Dienstreisegenehmigungen sind vorgesehen. | [LBV: Genehmigung](https://lbv.landbw.de/-/genehmigung) |
+| Wer bucht Bahn und Dienstwagen? | **Steht in keinem der Dokumente** und ist dienststellenintern geregelt. Das Werkzeug enthält dafür die Vorlage „Genehmigung und Buchungsweg klären“. | – |
+| Welches Verkehrsmittel? | Öffentliche Verkehrsmittel sind Standard, Ermäßigungen wie eine BahnCard sind zu nutzen; Dienstwagen oder Privat-PKW nur mit triftigem Grund. | [LRKG / VwV LRKG](https://www.besoldung-baden-wuerttemberg.de/beamtenrecht_in_baden_wuerttemberg/reisekosten-in-baden-wuerttemberg/35220) |
+| Wer trägt die Kosten? | Die Dienststelle. | Einladung des MLR vom 16.09.2026 |
+| Wie buche ich das Gästehaus? | Erster Block: Mail an `fortbildung@lel.bwl.de` **bis 16.10.2026**. Weitere Wochen: nach dem ersten Block bei Abteilung 1. Nur wochenweise, verbindlich, derzeit 40 € pro Nacht. Abmeldung spätestens 5 Werktage vorher, sonst wird berechnet. Anreise am Vorabend bei der Reservierung angeben. | Informationsblatt Gästehaus, Stand September 2026 |
+| Wo ist das Gästehaus? | Oberbettringer Straße 174, direkt neben der LEL (Europaplatz 1, Schwäbisch Gmünd). Kostenfreier Parkplatz; ab ZOB Schwäbisch Gmünd Linie 1 bis Hardt/Zwerenbergstraße, ca. 20 Minuten. | Informationsblatt; [LEL: Anfahrt](https://lel.landwirtschaft-bw.de/,Lde/Startseite/Wir+ueber+uns/Anfahrt+und+Lage+der+LEL) |
+| Verpflegung? | Kantine an in der Regel vier Tagen, nach Voranmeldung vergünstigt (derzeit 6,30 €); Selbstverpflegung im Gästehaus möglich. | Informationsblatt |
+| Bis wann abrechnen? | In DRIVE-BW unter „Reisekosten abrechnen“, innerhalb von **6 Monaten** nach Ende der Dienstreise. | [LBV: Fristen](https://lbv.landbw.de/-/frist-1) |
+| Wie viel Übernachtung wird erstattet? | Bis 95 € pro Nacht im Inland. | LRKG |
+
+Ältere Seiten der LEL nennen für das Gästehaus noch das „Haus der Gesundheit“
+in der Weißensteiner Straße und ein Catering mit Frühstück. Das
+Informationsblatt vom September 2026 ist neuer und hat Vorrang.
+
+Namen und Durchwahlen einzelner Beschäftigter stehen bewusst nicht im Code –
+das Repository ist öffentlich. Persönliche Ansprechpersonen trägst du unter
+**Optionen** ein; sie bleiben im Browser.
+
+Die Storno-Frist rechnet mit Arbeitstagen Montag bis Freitag ohne gesetzliche
+Feiertage in Baden-Württemberg. Zählt die LEL Samstage als Werktage mit, liegt
+die tatsächliche Frist einen Tag später – das Werkzeug warnt also nie zu spät.
 
 ---
 
