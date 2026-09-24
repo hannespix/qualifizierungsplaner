@@ -253,18 +253,21 @@
 .lq-filter { display: flex; flex-wrap: wrap; gap: var(--bw-space-2) var(--bw-space-4); margin: 0 0 var(--bw-space-3); }
 .lq-seg { border: 0; margin: 0; padding: 0; min-width: 0; }
 .lq-seg legend { font-size: var(--bw-fs-mini); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--bw-text-leise); padding: 0; margin-bottom: var(--bw-space-1); }
-.lq-seg__optionen { display: flex; flex-wrap: wrap; border: 1px solid var(--bw-schwarz); border-radius: var(--bw-radius); overflow: hidden; }
+/* Trennlinien entstehen aus 1px Abstand auf schwarzem Grund – so bleiben sie
+   auch beim Umbruch auf dem Smartphone vollständig und bündig. */
+.lq-seg__optionen { display: flex; flex-wrap: wrap; gap: 1px; background: var(--bw-schwarz); border: 1px solid var(--bw-schwarz); border-radius: var(--bw-radius); overflow: hidden; }
+/* margin: 0 – das Theme gibt jedem label 0.25rem Abstand nach unten. */
 .lq-seg__option {
-  position: relative; display: inline-flex; align-items: center; gap: 0.45em;
+  position: relative; display: inline-flex; align-items: center; gap: 0.45em; margin: 0;
   min-height: var(--lq-tt); padding: 0 var(--bw-space-2);
   background: var(--bw-weiss); color: var(--bw-schwarz); cursor: pointer; font-weight: 700; font-size: var(--bw-fs-klein);
-  border-left: 1px solid var(--bw-schwarz);
 }
-.lq-seg__option:first-child { border-left: 0; }
 .lq-seg__option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .lq-seg__option:hover { background: var(--bw-grau-100); }
 .lq-seg__option.is-aktiv { background: var(--bw-schwarz); color: var(--bw-weiss); }
-.lq-seg__option:focus-within { outline: 3px solid var(--bw-fokus); outline-offset: 2px; z-index: 1; }
+/* Fokusring nach innen, sonst schneidet overflow:hidden ihn ab; auf Schwarz weiß. */
+.lq-seg__option:focus-within { outline: 3px solid var(--bw-fokus); outline-offset: -6px; }
+.lq-seg__option.is-aktiv:focus-within { outline-color: var(--bw-weiss); }
 .lq-seg__zahl { font-weight: 400; font-variant-numeric: tabular-nums; opacity: .75; }
 
 /* ===================== Übersicht =================================== */
@@ -346,6 +349,7 @@
 .lq-reise__was h3 { margin: 0; font-size: var(--bw-fs-body); }
 .lq-reise__was span { font-size: var(--bw-fs-klein); color: var(--bw-text-leise); }
 .lq-reise__bedarf { display: flex; align-items: center; gap: var(--bw-space-1); font-size: var(--bw-fs-klein); font-weight: 700; }
+.lq-reise__bedarf label { margin: 0; }
 .lq-reise__bedarf select { width: auto; min-width: 7rem; }
 .lq-reise__vorlagen { display: flex; flex-wrap: wrap; gap: var(--bw-space-1) var(--bw-space-3); align-items: center; margin-top: var(--bw-space-2); font-size: var(--bw-fs-klein); }
 .lq-reise__vorlagen > span { color: var(--bw-text-leise); }
@@ -368,7 +372,7 @@
 .lq-schritt__inhalt select { width: 100%; }
 .lq-haken { display: flex; align-items: center; gap: var(--bw-space-1); min-height: var(--lq-tt); cursor: pointer; font-size: var(--bw-fs-klein); font-weight: 400; margin: 0; }
 .lq-haken input { width: 1.15rem; height: 1.15rem; margin: 0; flex: 0 0 auto; accent-color: var(--bw-schwarz); }
-.lq-inline { display: flex; align-items: center; gap: var(--bw-space-1); font-weight: 700; font-size: var(--bw-fs-klein); }
+.lq-inline { display: flex; align-items: center; gap: var(--bw-space-1); font-weight: 700; font-size: var(--bw-fs-klein); margin: 0; }
 .lq-inline select { width: auto; }
 .lq-editor-erledigt { margin-top: var(--bw-space-2); padding: 0 var(--bw-space-2); border: var(--bw-border); border-left: 4px solid var(--bw-gelb); }
 
