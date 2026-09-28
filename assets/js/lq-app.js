@@ -1,7 +1,7 @@
 (function(){
 'use strict';
-var R=window.React, RD=window.ReactDOM, C=window.LQCore, D=window.LQData, X=window.LQExport, T=window.LQTravel, M=window.LQMail;
-if(!R||!RD||!C||!D||!X||!T||!M){ document.getElementById('root').innerHTML='<div class="fatal"><b>Dashboard konnte nicht gestartet werden.</b><p>Interne Komponenten fehlen.</p></div>'; return; }
+var R=window.React, RD=window.ReactDOM, C=window.LQCore, D=window.LQData, X=window.LQExport, T=window.LQTravel, M=window.LQMail, A=window.LQAbwesenheit;
+if(!R||!RD||!C||!D||!X||!T||!M||!A){ document.getElementById('root').innerHTML='<div class="fatal"><b>Dashboard konnte nicht gestartet werden.</b><p>Interne Komponenten fehlen.</p></div>'; return; }
 var h=R.createElement, STORAGE='lq-dashboard-v28-events', LEGACY_STORAGE=['lq-dashboard-v27-events','lq-dashboard-v26-events','lq-dashboard-v25-events'], VIEW='lq-dashboard-v29-view', VIEW_OLD='lq-dashboard-v28-view', FILTER='lq-dashboard-v29-filter', SETTINGS='LQ_SETTINGS_V26';
 var MONTHS=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 function cx(){return Array.prototype.slice.call(arguments).filter(Boolean).join(' ')}
@@ -25,7 +25,7 @@ function migratePlanEvents(stored){
 }
 // Gespeicherte Referenztermine bekommen neue Plan-Metadaten (z. B. Aufgabe,
 // Vorlage) nachgereicht. Persönliche Angaben bleiben unberührt.
-function ergaenzeReferenz(liste){var ref={};D.makeDefaultEvents().forEach(function(e){ref[e.id]=e});return liste.map(function(e){var r=e&&ref[e.id];if(!r)return e;var x=e;['aufgabe','vorlage'].forEach(function(k){if(r[k]!==undefined&&x[k]===undefined){if(x===e)x=Object.assign({},e);x[k]=r[k]}});return x})}
+function ergaenzeReferenz(liste){var ref={};D.makeDefaultEvents().forEach(function(e){ref[e.id]=e});return liste.map(function(e){var r=e&&ref[e.id];if(!r)return e;var x=e;['aufgabe','vorlage','tageLQ','abwHinweis'].forEach(function(k){if(r[k]!==undefined&&x[k]===undefined){if(x===e)x=Object.assign({},e);x[k]=r[k]}});return x})}
 function safeLoad(){try{
   var raw=localStorage.getItem(STORAGE);
   if(raw){var x=JSON.parse(raw);if(Array.isArray(x))return ergaenzeReferenz(x)}
@@ -445,6 +445,7 @@ class ExportMenue extends R.Component{
       h('ul',{className:'lq-menue__liste'},
         eintrag('calendar','Outlook / iCal',p.onIcs),
         eintrag('print','PDF / Drucken',p.onPdf),
+        eintrag('table','Abwesenheiten (Tage)',p.onAbw),
         eintrag('download','Sicherung (JSON)',p.onBackup)));
   }
 }
@@ -456,7 +457,7 @@ function Werkzeugleiste(p){
       h('button',{type:'button',onClick:function(){p.setSearch('')},disabled:!sucheAktiv(p.search),title:'Sucheingabe leeren'},'Leeren')),
     h('span',{className:'lq-werkzeugleiste-trenner'}),
     h(Button,{icon:'plus',kind:'primary',onClick:p.onNeu},'Termin'),
-    h(ExportMenue,{onIcs:p.onIcs,onPdf:p.onPdf,onBackup:p.onBackup}),
+    h(ExportMenue,{onIcs:p.onIcs,onPdf:p.onPdf,onAbw:p.onAbw,onBackup:p.onBackup}),
     h(Button,{icon:'gear',onClick:p.openOptions},'Optionen'));
 }
 
@@ -533,7 +534,83 @@ class PdfExportModal extends R.Component{
     h('div',{className:'modal-actions'},h('div',{className:'spacer'}),h(Button,{onClick:this.props.onClose},'Abbrechen'),h(Button,{kind:'primary',icon:'print',onClick:this.doPrint},'Druckansicht öffnen'))
   ))}
 }
-function PrintReport(p){var c=p.config,events=p.events,cols=c.columns,ulb=C.requirementProgress(p.allEvents,'ulb8',40),caseEvent=p.allEvents.find(function(e){return e.requirementId==='caseprep2w'}),travel=T.travelAggregate(p.allEvents,'qualifier'),reiseOffen=offeneReiseTermine(p.allEvents).length,headers={kw:'KW',date:'Datum',title:'Termin',location:'Ort',status:'Status',travel:'Dienstreise',category:'Kategorie',participant:'Teilnehmer',notes:'Notizen'},keys=Object.keys(headers).filter(function(k){return cols[k]});function cell(k,e){if(k==='kw')return 'KW '+(e.sourceKW||C.computedKW(e));if(k==='date')return fmtRange(e);if(k==='title')return e.title;if(k==='location')return e.location||'–';if(k==='status')return statusLabel(e);if(k==='travel')return travelShort(e);if(k==='category')return e.category||'–';if(k==='participant')return roleLabel(e);if(k==='notes')return e.notes||'';return''}return h('section',{className:cx('print-report',c.density==='compact'&&'compact',!c.optionalShade&&'no-optional-shade')},h('div',{className:'pr-head'},h('div',{className:'pr-kicker'},'Laufbahnqualifizierung · Terminübersicht'),h('h1',null,c.title||'Persönlicher Terminplan'),h('div',{className:'pr-meta'},'Planstand 15.09.2026 · Ausdruck '+todayDE()+' · '+events.length+' Einträge')),c.includeSummary&&h('div',{className:'pr-summary'},h('div',{className:'pr-stat'},h('b',null,events.filter(function(e){return e.obligation==='Pflicht'}).length),h('span',null,'Pflichtblöcke in Auswahl')),h('div',{className:'pr-stat'},h('b',null,reiseOffen?reiseOffen:travel.ready+'/'+travel.required),h('span',null,reiseOffen?'Termine mit offener Reiseplanung':'Dienstreisen vollständig geplant')),h('div',{className:'pr-stat'},h('b',null,ulb.plannedDays+'/40'),h('span',null,'ULB-Arbeitstage geplant')),h('div',{className:'pr-stat'},h('b',null,caseEvent?'terminiert':'offen'),h('span',null,'2 Wochen Verwaltungsfall'))),h('table',null,h('thead',null,h('tr',null,keys.map(function(k){return h('th',{key:k},headers[k])}))),h('tbody',null,events.map(function(e){return h('tr',{key:e.id,className:e.obligation==='Optional'?'row-optional':''},keys.map(function(k){return h('td',{key:k,className:cx((k==='kw'||k==='date'||k==='status')&&'nowrap',k==='travel'&&'travel-print')},k==='status'?h('span',{className:'pr-status'},cell(k,e)):cell(k,e))}))}))),h('div',{className:'pr-note'},'Hinweis: Grundlage ist der Ausbildungsplan Stand 15.09.2026 (Anlage 2 zur Einladung des MLR vom 16.09.2026). Welche LEL-Lehrgänge zu besuchen sind, ergibt sich aus der gelben Markierung im Plan. Dienstreiseangaben sind persönliche Planungsdaten pro Termin.'),h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.9')))}
+// =====================================================================
+// Abwesenheiten von der Dienststelle: nur Pflichtteile, inkl. Abordnung
+// =====================================================================
+function zahlTage(n){return n+(n===1?' Arbeitstag':' Arbeitstage')}
+// Weiche Trennstellen in langen Komposita („Vorbereitungs-zeitraum“) – für
+// Browser ohne deutsche Silbentrennung auf schmalen Bildschirmen.
+function trennbar(t){return String(t||'').replace(/(ungs|heits|keits|schafts)(?=[a-zäöüß]{4,})/g,'$1\u00AD')}
+function AbwesenheitTabelle(p){
+  var d=p.daten;
+  return h('table',{className:'lq-abw-tabelle'},
+    h('thead',null,h('tr',null,
+      h('th',{scope:'col'},'Zeitraum'),h('th',{scope:'col'},'Anlass'),h('th',{scope:'col',className:'zahl'},'Tage'))),
+    d.gruppen.map(function(g){
+      return h('tbody',{key:g.id},
+        h('tr',{className:'lq-abw-gruppe'},h('th',{scope:'rowgroup',colSpan:2},g.titel),h('td',{className:'zahl'},g.tage)),
+        g.zeilen.map(function(z){
+          var zusatz=[z.ort,z.hinweis].filter(Boolean).join(' · ');
+          return h('tr',{key:z.id,className:z.offen?'is-offen':null},
+            h('td',{className:'lq-abw-wann'},h('b',null,z.kw?'KW '+z.kw:'–'),h('span',null,z.offen?'noch offen':fmtKurz({start:z.start,end:z.end}))),
+            h('td',null,h('span',null,trennbar(z.titel)),zusatz?h('span',{className:'lq-abw-zusatz'},trennbar(zusatz)):null),
+            h('td',{className:'zahl'},z.tage));
+        }));
+    }),
+    h('tfoot',null,h('tr',null,h('th',{scope:'row',colSpan:2},'Summe'),h('td',{className:'zahl'},d.gesamt))));
+}
+function abwKacheln(d){
+  var k=[{wert:d.gesamt,text:'Arbeitstage gesamt'}];
+  Object.keys(d.jahre).sort().forEach(function(j){k.push({wert:d.jahre[j],text:'davon '+j})});
+  if(d.offen)k.push({wert:d.offen,text:'noch nicht terminiert'});
+  return k;
+}
+function AbwesenheitHinweise(p){
+  var d=p.daten,liste=['Nur Pflichtteile der Laufbahnqualifizierung, einschließlich ULB-Abordnung. Gezählt werden Arbeitstage Montag bis Freitag ohne gesetzliche Feiertage in Baden-Württemberg; eine Anreise am Vorabend (Sonntag) zählt nicht.'];
+  if(d.offen)liste.push(d.ulbGeplant
+    ?'ULB-Abordnung: '+d.ulbGeplant+' von '+d.ulbSoll+' Arbeitstagen terminiert, der Rest ist in der Summe enthalten.'
+    :'Die ULB-Abordnung (8 Wochen) ist noch nicht terminiert; ihre '+d.ulbSoll+' Arbeitstage sind in der Summe enthalten.');
+  if(d.ohneVorbereitung!==d.gesamt)liste.push('Ohne Prüfungsvorbereitung: '+zahlTage(d.ohneVorbereitung)+'. Den Verwaltungsvorgang bearbeitest du laut Plan an der Stammdienststelle – ob die zwei Wochen als Abwesenheit gelten, hängt davon ab, wo du ihn bearbeitest.');
+  d.ueberschneidungen.forEach(function(u){liste.push('Achtung: „'+u.a+'“ und „'+u.b+'“ überschneiden sich – gemeinsame Tage zählen doppelt.')});
+  return h('ul',{className:cx('lq-abw-hinweise',p.druck&&'pr-note')},liste.map(function(t,i){return h('li',{key:i},t)}));
+}
+// Tastatur: Fokus beim Öffnen auf „Schließen“, Escape schließt, danach
+// zurück zum Export-Menü.
+class AbwesenheitModal extends R.Component{
+  constructor(p){super(p);this.taste=this.taste.bind(this)}
+  componentDidMount(){document.addEventListener('keydown',this.taste);if(this.zu)this.zu.focus()}
+  componentWillUnmount(){document.removeEventListener('keydown',this.taste);var z=document.querySelector('.lq-menue > summary');if(z)z.focus()}
+  taste(e){if(e.key==='Escape')this.props.onClose()}
+  render(){
+    var self=this,p=this.props,d=p.daten,wo=String(p.settings.absDienststelle||'').trim();
+    return h('div',{className:'modal-backdrop',onMouseDown:function(e){if(e.target===e.currentTarget)p.onClose()}},
+      h('div',{className:'modal lq-abw-modal',role:'dialog','aria-modal':'true','aria-labelledby':'lq-abw-titel'},
+        h('div',{className:'modal-head'},
+          h('div',null,h('div',{className:'eyebrow'},'Abwesenheiten'+(wo?' · '+wo:'')),h('h2',{id:'lq-abw-titel'},'Pflichtteile in Arbeitstagen')),
+          h('button',{type:'button',className:'iconbtn',ref:function(n){self.zu=n},onClick:p.onClose,'aria-label':'Schließen'},h(Icon,{name:'close'}))),
+        h('dl',{className:'lq-abw-summen'},abwKacheln(d).map(function(k){
+          return h('div',{key:k.text,className:'lq-abw-summe'},h('dt',null,k.text),h('dd',null,k.wert));
+        })),
+        h('div',{className:'lq-abw-scroll'},h(AbwesenheitTabelle,{daten:d})),
+        h(AbwesenheitHinweise,{daten:d}),
+        h('div',{className:'modal-actions'},h('div',{className:'spacer'}),
+          h(Button,{onClick:p.onClose},'Schließen'),
+          h(Button,{kind:'primary',icon:'print',onClick:p.onPrint},'Drucken'))));
+  }
+}
+function AbwesenheitBericht(p){
+  var d=p.daten,s=p.settings,wer=[String(s.absName||'').trim(),String(s.absDienststelle||'').trim()].filter(Boolean).join(' · ');
+  return h('section',{className:'print-report lq-abw-druck'},
+    h('div',{className:'pr-head'},
+      h('div',{className:'pr-kicker'},'Laufbahnqualifizierung gD Landwirtschaft · Abwesenheiten'),
+      h('h1',null,'Abwesenheiten von der Dienststelle'),
+      h('div',{className:'pr-meta'},(wer?wer+' · ':'')+'Pflichtteile einschließlich ULB-Abordnung · Ausbildungsplan Stand 15.09.2026 · Ausdruck '+todayDE())),
+    h('div',{className:'pr-summary'},abwKacheln(d).map(function(k){return h('div',{key:k.text,className:'pr-stat'},h('b',null,k.wert),h('span',null,k.text))})),
+    h(AbwesenheitTabelle,{daten:d}),
+    h(AbwesenheitHinweise,{daten:d,druck:true}),
+    h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.10')));
+}
+function PrintReport(p){var c=p.config,events=p.events,cols=c.columns,ulb=C.requirementProgress(p.allEvents,'ulb8',40),caseEvent=p.allEvents.find(function(e){return e.requirementId==='caseprep2w'}),travel=T.travelAggregate(p.allEvents,'qualifier'),reiseOffen=offeneReiseTermine(p.allEvents).length,headers={kw:'KW',date:'Datum',title:'Termin',location:'Ort',status:'Status',travel:'Dienstreise',category:'Kategorie',participant:'Teilnehmer',notes:'Notizen'},keys=Object.keys(headers).filter(function(k){return cols[k]});function cell(k,e){if(k==='kw')return 'KW '+(e.sourceKW||C.computedKW(e));if(k==='date')return fmtRange(e);if(k==='title')return e.title;if(k==='location')return e.location||'–';if(k==='status')return statusLabel(e);if(k==='travel')return travelShort(e);if(k==='category')return e.category||'–';if(k==='participant')return roleLabel(e);if(k==='notes')return e.notes||'';return''}return h('section',{className:cx('print-report',c.density==='compact'&&'compact',!c.optionalShade&&'no-optional-shade')},h('div',{className:'pr-head'},h('div',{className:'pr-kicker'},'Laufbahnqualifizierung · Terminübersicht'),h('h1',null,c.title||'Persönlicher Terminplan'),h('div',{className:'pr-meta'},'Planstand 15.09.2026 · Ausdruck '+todayDE()+' · '+events.length+' Einträge')),c.includeSummary&&h('div',{className:'pr-summary'},h('div',{className:'pr-stat'},h('b',null,events.filter(function(e){return e.obligation==='Pflicht'}).length),h('span',null,'Pflichtblöcke in Auswahl')),h('div',{className:'pr-stat'},h('b',null,reiseOffen?reiseOffen:travel.ready+'/'+travel.required),h('span',null,reiseOffen?'Termine mit offener Reiseplanung':'Dienstreisen vollständig geplant')),h('div',{className:'pr-stat'},h('b',null,ulb.plannedDays+'/40'),h('span',null,'ULB-Arbeitstage geplant')),h('div',{className:'pr-stat'},h('b',null,caseEvent?'terminiert':'offen'),h('span',null,'2 Wochen Verwaltungsfall'))),h('table',null,h('thead',null,h('tr',null,keys.map(function(k){return h('th',{key:k},headers[k])}))),h('tbody',null,events.map(function(e){return h('tr',{key:e.id,className:e.obligation==='Optional'?'row-optional':''},keys.map(function(k){return h('td',{key:k,className:cx((k==='kw'||k==='date'||k==='status')&&'nowrap',k==='travel'&&'travel-print')},k==='status'?h('span',{className:'pr-status'},cell(k,e)):cell(k,e))}))}))),h('div',{className:'pr-note'},'Hinweis: Grundlage ist der Ausbildungsplan Stand 15.09.2026 (Anlage 2 zur Einladung des MLR vom 16.09.2026). Welche LEL-Lehrgänge zu besuchen sind, ergibt sich aus der gelben Markierung im Plan. Dienstreiseangaben sind persönliche Planungsdaten pro Termin.'),h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.10')))}
 
 class OptionsModal extends R.Component{
   constructor(p){super(p);this.state={draft:Object.assign({},p.settings,{selectedOptionalIds:(p.settings.selectedOptionalIds||[]).slice()})};this.save=this.save.bind(this)}
@@ -706,7 +783,7 @@ class App extends R.Component{
     var naechster=chronologisch(meineTermine(events,settings)).find(function(e){return e.start&&e.end>=T.heute()});
     var monat=naechster?C.parseDateOnly(naechster.start):new Date(2026,10,1);
     this.state={events:events,settings:settings,view:v,search:'',filter:ladeFilter(),optionsOpen:false,editing:null,creating:null,
-      calendarMonth:new Date(monat.getFullYear(),monat.getMonth(),1),icsOpen:false,pdfOpen:false,printReport:null,vorlage:null};
+      calendarMonth:new Date(monat.getFullYear(),monat.getMonth(),1),icsOpen:false,pdfOpen:false,abwOpen:false,printReport:null,vorlage:null};
     ['setView','setFilter','saveEvent','removeEvent','exportICS','printPdf','runPrint','reset','addUlb','addCase','saveSettings','patchTravel','sammelReise','openVorlage','erledigt']
       .forEach(function(n){this[n]=this[n].bind(this)},this);
   }
@@ -756,21 +833,25 @@ class App extends R.Component{
       h('main',{className:'bw-app bw-app--weit lq-inhalt',id:'inhalt'},
         h('div',{className:'lq-titelzeile'},
           h('div',null,h('div',{className:'eyebrow'},'Laufbahnqualifizierung · Qualifizierer'),h('h1',null,'Terminplan 2026/27')),
-          h(Badge,{kind:'neutral'},'V2.9 · Plan 15.09.2026')),
+          h(Badge,{kind:'neutral'},'V2.10 · Plan 15.09.2026')),
         h(Werkzeugleiste,{
           search:s.search,
           setSearch:function(v){self.setState({search:v,view:(v&&!mitFilter)?'overview':s.view})},
           openOptions:function(){self.setState({optionsOpen:true})},
           onNeu:function(){self.setState({creating:{id:uid(),title:'',start:'2027-01-01',end:'2027-01-01',sourceKW:'',category:'Sonstiges',obligation:'Pflicht',statusOrigin:'manual',relevance:'Qualifizierer',location:'',travel:{required:'open'},notes:''}})},
-          onIcs:this.exportICS,onPdf:this.printPdf,
-          onBackup:function(){download('laufbahnqualifizierung_sicherung.json','application/json',JSON.stringify({version:'2.9',events:s.events,settings:s.settings},null,2))}}),
+          onIcs:this.exportICS,onPdf:this.printPdf,onAbw:function(){self.setState({abwOpen:true})},
+          onBackup:function(){download('laufbahnqualifizierung_sicherung.json','application/json',JSON.stringify({version:'2.10',events:s.events,settings:s.settings},null,2))}}),
         mitFilter?h(FilterLeiste,{filter:s.filter,events:s.events,settings:settings,onChange:this.setFilter}):null,
         ansicht),
       h('footer',{className:'bw-footer'},
         h('div',{className:'bw-app bw-app--weit lq-footer-innen'},
           h(Marke,{negativ:true}),
           h('span',{className:'bw-klein'},'Persönliche Daten bleiben im Browser dieses Rechners · Änderungen des Ausbildungsplans vorbehalten'))),
-      s.printReport?h(PrintReport,{config:s.printReport.config,events:s.printReport.events,allEvents:s.events}):null,
+      s.printReport?(s.printReport.config.typ==='abw'
+        ?h(AbwesenheitBericht,{daten:A.berechnen(s.events),settings:settings})
+        :h(PrintReport,{config:s.printReport.config,events:s.printReport.events,allEvents:s.events})):null,
+      s.abwOpen?h(AbwesenheitModal,{daten:A.berechnen(s.events),settings:settings,onClose:function(){self.setState({abwOpen:false})},
+        onPrint:function(){self.setState({abwOpen:false});self.runPrint({orientation:'portrait',typ:'abw'},[])}}):null,
       s.icsOpen?h(IcsExportModal,{events:s.events,currentFilters:{visibleIds:currentIds,search:s.search,year:'all'},currentEvents:zeitlich,settings:settings,onClose:function(){self.setState({icsOpen:false})}}):null,
       s.pdfOpen?h(PdfExportModal,{events:s.events,currentFilters:{visibleIds:currentIds,search:s.search,year:'all'},currentEvents:zeitlich,settings:settings,onClose:function(){self.setState({pdfOpen:false})},onPrint:this.runPrint}):null,
       s.optionsOpen?h(OptionsModal,{settings:settings,optionalEvents:optionalEvents,onClose:function(){self.setState({optionsOpen:false})},onSave:this.saveSettings,onReset:this.reset}):null,

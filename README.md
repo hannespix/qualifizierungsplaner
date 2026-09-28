@@ -35,6 +35,10 @@ sind `CLAUDE.md` (Design + Technik) und `AGENTS.md` (Prozess).
   „Prüfung … Karlsruhe"), Treffer werden hervorgehoben
 - Planung der **ULB-Abordnung** (8 Wochen / 40 Arbeitstage, aufteilbar) und des
   **Verwaltungsfalls** vor der Verwaltungsprüfung
+- **Abwesenheiten von der Dienststelle** (Export → „Abwesenheiten (Tage)“):
+  alle Pflichtteile einschließlich ULB-Abordnung in Arbeitstagen (Mo–Fr ohne
+  Feiertage in Baden-Württemberg), gruppiert, mit Summe je Jahr, Hinweis auf
+  noch nicht terminierte ULB-Tage und als Ausdruck für die Vorgesetzten
 - **iCal-/Outlook-Export** und druckoptimierte **PDF-Ansicht**
 - Persönliche Daten – auch Absender und Ansprechpersonen für die Vorlagen –
   bleiben im `localStorage` des Browsers
@@ -55,6 +59,7 @@ assets/js/lq-data.js        ← Ausbildungsplan, Fakten zu Reise und Unterkunft 
 assets/js/lq-export.js      ← iCal-Erzeugung
 assets/js/lq-travel.js      ← Dienstreise-Schritte, Fristen, Feiertage BW
 assets/js/lq-mail.js        ← E-Mail-Vorlagen
+assets/js/lq-abwesenheit.js ← Abwesenheiten der Pflichtteile in Arbeitstagen
 assets/js/lq-app.js         ← Oberfläche (React)
 assets/vendor/react/        ← React 16, lokal abgelegt (kein CDN)
 assets/fonts/ · assets/logo/  ← lizenzpflichtig, siehe unten
@@ -172,6 +177,12 @@ laut Einladung verpflichtend hinzu. Die Ausbildungswoche am RP Karlsruhe (KW 9)
 und die Wahlstationen sind fakultativ. Ergänzend berücksichtigt: APrOLW gD
 (§ 4 und § 22 Abs. 3) sowie das Informationsblatt zum Gästehaus der LEL
 (Reservierungsanfrage für den ersten Block bis 16.10.2026).
+
+Für die Abwesenheiten gilt: Die Lehrgänge „Betriebswirtschaft I“ (KW 51 und
+KW 2) zählen laut Plan nur mit je 2 Tagen für die Laufbahnqualifizierung, die
+praktische Prüfung mit 1 Tag je Prüfling; in KW 10 endet die LQ am Donnerstag.
+Die zwei Wochen Prüfungsvorbereitung (KW 48–49/2027) sind im Plan der
+Stammdienststelle zugeordnet und werden deshalb auch getrennt ausgewiesen.
 
 Beim ersten Aufruf einer neuen Planversion bleiben persönliche Eintragungen
 erhalten: eigene Termine, ULB-Blöcke, Verwaltungsfall und die Reiseplanung je
