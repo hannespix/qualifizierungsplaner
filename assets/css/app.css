@@ -229,6 +229,8 @@
 .export-mini b { display: block; font-size: var(--bw-fs-h3); font-variant-numeric: tabular-nums; }
 .export-mini span { font-size: var(--bw-fs-mini); color: var(--bw-text-leise); }
 .export-preview { margin-top: var(--bw-space-2); }
+.export-preview-row .date { flex-basis: 9.5rem; }
+.export-preview-row .title .lq-zeile-leise { display: inline; }
 .export-preview-head { display: flex; justify-content: space-between; font-size: var(--bw-fs-klein); margin-bottom: var(--bw-space-1); }
 
 /* ===================== Fußzeile ==================================== */
@@ -479,6 +481,8 @@
   .lq-filter { flex-direction: column; }
   .lq-seg__option { flex: 1 1 auto; justify-content: center; }
   .cols-grid, .export-summary, .time-row { grid-template-columns: 1fr; }
+  .export-preview-row { flex-wrap: wrap; }
+  .export-preview-row .date { flex-basis: auto; }
   .lq-werkzeugleiste .bw-search { flex: 1 1 100%; max-width: none; }
   /* Termin, Exportieren, Optionen teilen sich eine Zeile. */
   .lq-werkzeugleiste > .btn, .lq-werkzeugleiste > .lq-menue { flex: 1 1 0; min-width: 0; }
