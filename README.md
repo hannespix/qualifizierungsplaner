@@ -33,13 +33,18 @@ sind `CLAUDE.md` (Design + Technik) und `AGENTS.md` (Prozess).
 - **Globale Suche** über alle Felder: mehrere Wörter in beliebiger Reihenfolge,
   tippfehler- und umlauttolerant (`prufung karlsruh` findet
   „Prüfung … Karlsruhe"), Treffer werden hervorgehoben
-- Planung der **ULB-Abordnung** (8 Wochen / 40 Arbeitstage, aufteilbar) und des
+- Planung der **ULB-Abordnung** (8 Wochen / 40 Arbeitstage ohne Feiertage,
+  aufteilbar) und des
   **Verwaltungsfalls** vor der Verwaltungsprüfung
 - **Abwesenheiten von der Dienststelle** (Export → „Abwesenheiten (Tage)“):
   alle Pflichtteile einschließlich ULB-Abordnung in Arbeitstagen (Mo–Fr ohne
   Feiertage in Baden-Württemberg), gruppiert, mit Summe je Jahr, Hinweis auf
   noch nicht terminierte ULB-Tage und als Ausdruck für die Vorgesetzten
 - **iCal-/Outlook-Export** und druckoptimierte **PDF-Ansicht**
+- **Sicherung (JSON)** aller Termine und Einstellungen – und **Sicherung
+  einspielen**: Termine mit gleicher Kennung werden ersetzt, neue ergänzt,
+  alle anderen bleiben erhalten (so lassen sich auch Planungsdateien mit
+  einzelnen Terminen, etwa die ULB-Blöcke, übernehmen)
 - Persönliche Daten – auch Absender und Ansprechpersonen für die Vorlagen –
   bleiben im `localStorage` des Browsers
 

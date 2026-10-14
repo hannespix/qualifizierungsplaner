@@ -129,17 +129,57 @@
   }
 
 
+  // Arbeitstage Montag bis Freitag; gesetzliche Feiertage in Baden-Württemberg
+  // zählen nicht mit, sobald LQTravel (Feiertagsliste) geladen ist.
   function workingDays(startValue, endValue) {
     if (!startValue || !endValue) return 0;
+    const feiertag = globalThis.LQTravel && globalThis.LQTravel.feiertag;
     let d = parseDateOnly(startValue);
     const end = parseDateOnly(endValue);
     let count = 0;
     while (d <= end) {
       const day = d.getDay();
-      if (day !== 0 && day !== 6) count++;
+      if (day !== 0 && day !== 6 && !(feiertag && feiertag(dateToISO(d)))) count++;
       d.setDate(d.getDate() + 1);
     }
     return count;
+  }
+
+  // Sicherung einspielen: Termine mit gleicher Kennung werden ersetzt, neue
+  // ergänzt, alle übrigen bleiben. Referenztermine des Ausbildungsplans
+  // behalten ihre Plandaten; aus der Datei kommen nur die persönlichen Angaben.
+  function mergeBackup(current, incoming, options = {}) {
+    const plan = new Map((options.plan || []).map((e) => [e.id, e]));
+    const result = (current || []).slice();
+    const index = new Map(result.map((e, i) => [e.id, i]));
+    const liste = [];
+    let neu = 0, aktualisiert = 0, uebersprungen = 0;
+    (Array.isArray(incoming) ? incoming : []).forEach((e) => {
+      if (!e || typeof e !== 'object' || !e.id || !e.title || !e.start || !e.end) { uebersprungen++; return; }
+      const i = index.get(e.id);
+      if (i !== undefined) {
+        const prev = result[i];
+        if (prev.statusOrigin === 'reference') {
+          const persoenlich = {};
+          ['travel', 'done', 'startTime', 'endTime'].forEach((k) => { if (e[k] !== undefined) persoenlich[k] = e[k]; });
+          const ref = plan.get(e.id);
+          if (e.notes !== undefined && (!ref || e.notes !== ref.notes)) persoenlich.notes = e.notes;
+          result[i] = mergePlanEvent(prev, persoenlich, { mode: 'manual' });
+        } else {
+          result[i] = { ...e };
+        }
+        aktualisiert++;
+        liste.push({ art: 'aktualisiert', titel: e.title, start: e.start, end: e.end });
+      } else if (e.statusOrigin === 'reference' && !plan.has(e.id)) {
+        uebersprungen++; // Planeintrag einer früheren Version, gibt es nicht mehr
+      } else {
+        result.push({ ...e, statusOrigin: e.statusOrigin || 'manual' });
+        index.set(e.id, result.length - 1);
+        neu++;
+        liste.push({ art: 'neu', titel: e.title, start: e.start, end: e.end });
+      }
+    });
+    return { events: result, neu, aktualisiert, uebersprungen, liste };
   }
 
   function requirementProgress(events, requirementId, targetDays) {
@@ -194,6 +234,7 @@
     formatRange,
     inclusiveDays,
     workingDays,
+    mergeBackup,
     requirementProgress,
     isoWeekInfo,
     kwMatches,
