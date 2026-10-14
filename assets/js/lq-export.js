@@ -27,6 +27,42 @@
   function eventDescription(e,h){
     var bits=[];var kw=e.sourceKW||(h.computedKW?h.computedKW(e):'');if(kw)bits.push('KW '+kw);if(h.statusLabel)bits.push(h.statusLabel(e));else if(e.obligation)bits.push(e.obligation);if(h.roleLabel)bits.push(h.roleLabel(e));else if(e.relevance)bits.push(e.relevance);if(e.category)bits.push(e.category);if(e.notes)bits.push(e.notes);return bits.join(' | ')
   }
+  // ---------------------------------------------------------- Teilnehmer
+  // Eingabe je Termin: Adressen getrennt durch Semikolon oder Zeilenumbruch,
+  // wahlweise mit Namen („Max Muster <max@…>“); bloße Adressen auch durch
+  // Komma getrennt. Im Kalender werden daraus ATTENDEE-Zeilen (erforderlich
+  // oder optional); Outlook versendet die Einladungen erst beim Senden.
+  var EMAIL=/^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/;
+  function parseTeilnehmer(text){
+    var out=[];
+    String(text||'').split(/[;\n]+/).forEach(function(tok){
+      tok=tok.trim();if(!tok)return;
+      var m=/^(.*?)<\s*([^<>\s]+)\s*>$/.exec(tok);
+      if(m){var mail=m[2].replace(/^mailto:/i,'');if(EMAIL.test(mail))out.push({cn:m[1].replace(/"/g,'').trim(),email:mail});return}
+      tok.split(/[,\s]+/).forEach(function(t){t=t.replace(/^mailto:/i,'');if(EMAIL.test(t))out.push({cn:'',email:t})});
+    });
+    return out;
+  }
+  // Alle Teilnehmer eines Termins samt Zusatzadressen aus dem Export, ohne
+  // Dubletten; „erforderlich“ gewinnt gegen „optional“.
+  function teilnehmerVon(e,opt){
+    var liste=[],seen={};
+    function add(arr,rolle){arr.forEach(function(t){var k=t.email.toLowerCase(),x=seen[k];
+      if(x){if(rolle==='REQ-PARTICIPANT')x.rolle=rolle;if(t.cn&&!x.cn)x.cn=t.cn;return}
+      x={cn:t.cn,email:t.email,rolle:rolle};seen[k]=x;liste.push(x)})}
+    add(parseTeilnehmer(e&&e.einladenPflicht),'REQ-PARTICIPANT');
+    add(parseTeilnehmer(opt&&opt.extraRequired),'REQ-PARTICIPANT');
+    add(parseTeilnehmer(e&&e.einladenOptional),'OPT-PARTICIPANT');
+    add(parseTeilnehmer(opt&&opt.extraOptional),'OPT-PARTICIPANT');
+    return liste;
+  }
+  function paramCN(cn){cn=String(cn||'').replace(/"/g,'').trim();if(!cn)return'';return';CN='+(/[,;:]/.test(cn)?'"'+cn+'"':cn)}
+  function pushTeilnehmer(out,e,opt){
+    var liste=teilnehmerVon(e,opt);if(!liste.length)return;
+    var org=opt.organizer||{};
+    if(org.email&&EMAIL.test(String(org.email).trim()))out.push('ORGANIZER'+paramCN(org.cn)+':mailto:'+String(org.email).trim());
+    liste.forEach(function(t){out.push('ATTENDEE;ROLE='+t.rolle+';PARTSTAT=NEEDS-ACTION;RSVP=TRUE'+paramCN(t.cn)+':mailto:'+t.email)});
+  }
   function pushAlarm(out,minutes){var n=Number(minutes);if(!Number.isFinite(n)||n<=0)return;out.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Erinnerung','TRIGGER:-PT'+Math.round(n)+'M','END:VALARM')}
   function vevent(out,e,opt,h,day,startTime,endTime,suffix){
     var title=(opt.prefix||'')+(opt.statusPrefix?statusPrefix(e):'')+e.title;
@@ -38,12 +74,13 @@
     var busy=opt.busyStatus||'BUSY';out.push('TRANSP:'+(busy==='FREE'?'TRANSPARENT':'OPAQUE'),'X-MICROSOFT-CDO-BUSYSTATUS:'+busy);
     if(opt.includeLocation!==false&&e.location)out.push('LOCATION:'+escapeICS(e.location));
     if(opt.includeDescription!==false){var desc=eventDescription(e,h);if(opt.includeTravelDescription&&h.travelSummary){var tr=h.travelSummary(e);if(tr)desc+=(desc?'\n\n':'')+tr}out.push('DESCRIPTION:'+escapeICS(desc));}
+    if(opt.includeAttendees!==false)pushTeilnehmer(out,e,opt);
     pushAlarm(out,opt.reminderMinutes);
     out.push('END:VEVENT');
   }
   function buildICS(events,opt,helpers){
-    opt=Object.assign({prefix:'',statusPrefix:false,privacy:'PRIVATE',busyStatus:'BUSY',timeMode:'allday',fixedStart:'08:30',fixedEnd:'16:30',includeLocation:true,includeDescription:true},opt||{});helpers=helpers||{};
-    var out=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//LQ Dashboard V2.11//DE','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+    opt=Object.assign({prefix:'',statusPrefix:false,privacy:'PRIVATE',busyStatus:'BUSY',timeMode:'allday',fixedStart:'08:30',fixedEnd:'16:30',includeLocation:true,includeDescription:true,includeAttendees:true},opt||{});helpers=helpers||{};
+    var out=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//LQ Dashboard V2.12//DE','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
     (events||[]).filter(function(e){return e&&e.start&&e.end}).forEach(function(e){
       if(opt.timeMode==='fixedDaily'){
         var st=compactTime(opt.fixedStart),et=compactTime(opt.fixedEnd);if(!st||!et){st='083000';et='163000'};
@@ -55,5 +92,5 @@
     });
     out.push('END:VCALENDAR');return out.join('\r\n');
   }
-  return{addDays:addDays,expandWeekdays:expandWeekdays,escapeICS:escapeICS,buildICS:buildICS,statusPrefix:statusPrefix};
+  return{addDays:addDays,expandWeekdays:expandWeekdays,escapeICS:escapeICS,buildICS:buildICS,statusPrefix:statusPrefix,parseTeilnehmer:parseTeilnehmer,teilnehmerVon:teilnehmerVon};
 });
