@@ -45,7 +45,10 @@ sind `CLAUDE.md` (Design + Technik) und `AGENTS.md` (Prozess).
   mit Namen); der Export schreibt sie als `ATTENDEE`-Felder und dich als
   Organisator (E-Mail unter Optionen). Outlook versendet die Einladungen erst,
   wenn du den Termin dort sendest. Beim Export lassen sich zusätzlich
-  Adressen für alle exportierten Termine angeben.
+  Adressen für alle exportierten Termine angeben. Beide Dialoge zeigen eine
+  Vorschau der Termine, die die aktuelle Auswahl erfasst; offene
+  Pflichttermine (Status „Offen“, etwa BW I) lassen sich zur Pflicht-Auswahl
+  dazunehmen.
 - **Sicherung (JSON)** aller Termine und Einstellungen – und **Sicherung
   einspielen**: Termine mit gleicher Kennung werden ersetzt, neue ergänzt,
   alle anderen bleiben erhalten (so lassen sich auch Planungsdateien mit
