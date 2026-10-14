@@ -32,6 +32,7 @@
   function gruss(s,formell){
     var z=[formell?'Mit freundlichen Grüßen':'Viele Grüße',platzhalter(s.absName,'Name'),platzhalter(s.absDienststelle,'Dienststelle')];
     if(String(s.absTelefon||'').trim())z.push('Tel. '+s.absTelefon.trim());
+    if(String(s.absEmail||'').trim())z.push(s.absEmail.trim());
     return z.join('\n');
   }
   function zeile(e,mitOrt){return '– '+kw(e)+': '+spanne(e)+(mitOrt&&e.location?', '+e.location:'')+' – '+e.title}

@@ -40,7 +40,12 @@ sind `CLAUDE.md` (Design + Technik) und `AGENTS.md` (Prozess).
   alle Pflichtteile einschließlich ULB-Abordnung in Arbeitstagen (Mo–Fr ohne
   Feiertage in Baden-Württemberg), gruppiert, mit Summe je Jahr, Hinweis auf
   noch nicht terminierte ULB-Tage und als Ausdruck für die Vorgesetzten
-- **iCal-/Outlook-Export** und druckoptimierte **PDF-Ansicht**
+- **iCal-/Outlook-Export** und druckoptimierte **PDF-Ansicht**. Je Termin
+  lassen sich **Teilnehmer** eintragen (erforderlich und optional, wahlweise
+  mit Namen); der Export schreibt sie als `ATTENDEE`-Felder und dich als
+  Organisator (E-Mail unter Optionen). Outlook versendet die Einladungen erst,
+  wenn du den Termin dort sendest. Beim Export lassen sich zusätzlich
+  Adressen für alle exportierten Termine angeben.
 - **Sicherung (JSON)** aller Termine und Einstellungen – und **Sicherung
   einspielen**: Termine mit gleicher Kennung werden ersetzt, neue ergänzt,
   alle anderen bleiben erhalten (so lassen sich auch Planungsdateien mit
@@ -137,6 +142,9 @@ und werden **nicht** an GitHub übertragen.
 Da das Repository öffentlich ist, ist alles weltweit einsehbar, was fest in den
 Quelltext geschrieben wird. Persönliche Angaben gehören daher ausschließlich in
 die Eingabefelder der Oberfläche.
+
+E-Mail-Adressen eingeladener Personen gehören zu den persönlichen Daten: Sie
+stehen nur im Browser und in deinen Sicherungen, nie im Quelltext.
 
 ---
 

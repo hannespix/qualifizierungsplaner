@@ -161,7 +161,7 @@
         const prev = result[i];
         if (prev.statusOrigin === 'reference') {
           const persoenlich = {};
-          ['travel', 'done', 'startTime', 'endTime'].forEach((k) => { if (e[k] !== undefined) persoenlich[k] = e[k]; });
+          ['travel', 'done', 'startTime', 'endTime', 'einladenPflicht', 'einladenOptional'].forEach((k) => { if (e[k] !== undefined) persoenlich[k] = e[k]; });
           const ref = plan.get(e.id);
           if (e.notes !== undefined && (!ref || e.notes !== ref.notes)) persoenlich.notes = e.notes;
           result[i] = mergePlanEvent(prev, persoenlich, { mode: 'manual' });

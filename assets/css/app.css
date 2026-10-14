@@ -203,7 +203,8 @@
 .cols-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--bw-space-1); margin-top: var(--bw-space-2); }
 
 /* ===================== Termin-Editor: Reise ======================== */
-.travel-section { grid-column: 1 / -1; border: var(--bw-border); padding: var(--bw-space-3); margin-top: var(--bw-space-2); }
+.travel-section, .lq-einladen { grid-column: 1 / -1; border: var(--bw-border); padding: var(--bw-space-3); margin-top: var(--bw-space-2); }
+.lq-einladen .field + .field { margin-top: var(--bw-space-2); }
 .travel-section-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--bw-space-2); flex-wrap: wrap; margin-bottom: var(--bw-space-2); }
 .travel-section-head h3 { margin: 0; font-size: var(--bw-fs-klein); }
 .travel-section-head span { font-size: var(--bw-fs-mini); color: var(--bw-text-leise); }
@@ -461,7 +462,7 @@
   .lq-schritte { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   /* minmax(0, …): Eingabefelder dürfen die Spalte nicht über den Dialog hinaus aufweiten. */
   .settings-sections, .export-grid, .formgrid { grid-template-columns: minmax(0, 1fr); }
-  .field.wide, .travel-section, .field.travel-note { grid-column: 1; }
+  .field.wide, .travel-section, .lq-einladen, .field.travel-note { grid-column: 1; }
   .settings-card:first-child, .settings-card:nth-child(2) { grid-column: 1; }
 }
 @media (max-width: 640px) {
