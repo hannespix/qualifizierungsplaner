@@ -85,7 +85,7 @@ function exportFilter(events,mode,current,selectedIds){
 function filterDateRange(events,from,to){return events.filter(function(e){if(from&&e.end<from)return false;if(to&&e.start>to)return false;return true})}
 function todayDE(){var d=new Date();return pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear()}
 
-function Icon(p){var paths={calendar:'M3 5h18v16H3z M7 3v4 M17 3v4 M3 9h18',timeline:'M4 7h16 M7 4v6 M4 13h16 M14 10v6 M4 19h16',table:'M4 5h16v14H4z M4 10h16 M10 5v14',compare:'M7 4v16 M4 7l3-3 3 3 M17 20V4 m-3 13 3 3 3-3',plus:'M12 5v14 M5 12h14',download:'M12 3v12 m-5-5 5 5 5-5 M5 21h14',print:'M6 9V3h12v6 M6 17h12v4H6z M4 9h16v8H4z',edit:'M4 20l4-1 10-10-3-3L5 16z M14 7l3 3',lock:'M7 11V8a5 5 0 0110 0v3 M5 11h14v10H5z',search:'M11 19a8 8 0 100-16 8 8 0 000 16zm6-2 4 4',reset:'M4 12a8 8 0 101.8-5 M4 4v6h6',chevleft:'M15 5l-7 7 7 7',chevright:'M9 5l7 7-7 7',close:'M6 6l12 12M18 6L6 18',check:'M5 12l4 4L19 6',mail:'M3 6h18v12H3z M3 7l9 6 9-6',copy:'M9 9h11v11H9z M5 15H4V4h11v1',alert:'M12 4l9 16H3z M12 9v4 M12 17h.01',building:'M4 21V8l8-5 8 5v13 M9 21v-6h6v6',briefcase:'M4 8h16v12H4z M9 8V5h6v3',menu:'M3 6h18 M3 12h18 M3 18h18',gear:'M12 8a4 4 0 100 8 4 4 0 000-8z M4 12h2 M18 12h2 M12 4v2 M12 18v2 M6.3 6.3l1.4 1.4 M16.3 16.3l1.4 1.4 M17.7 6.3l-1.4 1.4 M7.7 16.3l-1.4 1.4'};return h('svg',{viewBox:'0 0 24 24',width:p.size||18,height:p.size||18,fill:'none',stroke:'currentColor',strokeWidth:1.8,strokeLinecap:'round',strokeLinejoin:'round','aria-hidden':'true'},h('path',{d:paths[p.name]||'M12 12h.01'}))}
+function Icon(p){var paths={calendar:'M3 5h18v16H3z M7 3v4 M17 3v4 M3 9h18',timeline:'M4 7h16 M7 4v6 M4 13h16 M14 10v6 M4 19h16',table:'M4 5h16v14H4z M4 10h16 M10 5v14',compare:'M7 4v16 M4 7l3-3 3 3 M17 20V4 m-3 13 3 3 3-3',plus:'M12 5v14 M5 12h14',download:'M12 3v12 m-5-5 5 5 5-5 M5 21h14',upload:'M12 15V3 m-5 5 5-5 5 5 M5 21h14',print:'M6 9V3h12v6 M6 17h12v4H6z M4 9h16v8H4z',edit:'M4 20l4-1 10-10-3-3L5 16z M14 7l3 3',lock:'M7 11V8a5 5 0 0110 0v3 M5 11h14v10H5z',search:'M11 19a8 8 0 100-16 8 8 0 000 16zm6-2 4 4',reset:'M4 12a8 8 0 101.8-5 M4 4v6h6',chevleft:'M15 5l-7 7 7 7',chevright:'M9 5l7 7-7 7',close:'M6 6l12 12M18 6L6 18',check:'M5 12l4 4L19 6',mail:'M3 6h18v12H3z M3 7l9 6 9-6',copy:'M9 9h11v11H9z M5 15H4V4h11v1',alert:'M12 4l9 16H3z M12 9v4 M12 17h.01',building:'M4 21V8l8-5 8 5v13 M9 21v-6h6v6',briefcase:'M4 8h16v12H4z M9 8V5h6v3',menu:'M3 6h18 M3 12h18 M3 18h18',gear:'M12 8a4 4 0 100 8 4 4 0 000-8z M4 12h2 M18 12h2 M12 4v2 M12 18v2 M6.3 6.3l1.4 1.4 M16.3 16.3l1.4 1.4 M17.7 6.3l-1.4 1.4 M7.7 16.3l-1.4 1.4'};return h('svg',{viewBox:'0 0 24 24',width:p.size||18,height:p.size||18,fill:'none',stroke:'currentColor',strokeWidth:1.8,strokeLinecap:'round',strokeLinejoin:'round','aria-hidden':'true'},h('path',{d:paths[p.name]||'M12 12h.01'}))}
 function Button(p){return h('button',{type:'button',className:cx('btn',p.kind&&'btn-'+p.kind,p.className),onClick:p.onClick,disabled:p.disabled,title:p.title},p.icon&&h(Icon,{name:p.icon,size:17}),h('span',null,p.children))}
 function Badge(p){return h('span',{className:cx('badge',p.kind&&'badge-'+p.kind)},p.lock&&h(Icon,{name:'lock',size:12}),p.children)}
 // In der Einzeldatei aus tools/build_singlefile.py gibt es keine relativen
@@ -446,7 +446,8 @@ class ExportMenue extends R.Component{
         eintrag('calendar','Outlook / iCal',p.onIcs),
         eintrag('print','PDF / Drucken',p.onPdf),
         eintrag('table','Abwesenheiten (Tage)',p.onAbw),
-        eintrag('download','Sicherung (JSON)',p.onBackup)));
+        eintrag('download','Sicherung (JSON)',p.onBackup),
+        eintrag('upload','Sicherung einspielen',p.onRestore)));
   }
 }
 function Werkzeugleiste(p){
@@ -457,7 +458,7 @@ function Werkzeugleiste(p){
       h('button',{type:'button',onClick:function(){p.setSearch('')},disabled:!sucheAktiv(p.search),title:'Sucheingabe leeren'},'Leeren')),
     h('span',{className:'lq-werkzeugleiste-trenner'}),
     h(Button,{icon:'plus',kind:'primary',onClick:p.onNeu},'Termin'),
-    h(ExportMenue,{onIcs:p.onIcs,onPdf:p.onPdf,onAbw:p.onAbw,onBackup:p.onBackup}),
+    h(ExportMenue,{onIcs:p.onIcs,onPdf:p.onPdf,onAbw:p.onAbw,onBackup:p.onBackup,onRestore:p.onRestore}),
     h(Button,{icon:'gear',onClick:p.openOptions},'Optionen'));
 }
 
@@ -608,9 +609,41 @@ function AbwesenheitBericht(p){
     h('div',{className:'pr-summary'},abwKacheln(d).map(function(k){return h('div',{key:k.text,className:'pr-stat'},h('b',null,k.wert),h('span',null,k.text))})),
     h(AbwesenheitTabelle,{daten:d}),
     h(AbwesenheitHinweise,{daten:d,druck:true}),
-    h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.10')));
+    h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.11')));
 }
-function PrintReport(p){var c=p.config,events=p.events,cols=c.columns,ulb=C.requirementProgress(p.allEvents,'ulb8',40),caseEvent=p.allEvents.find(function(e){return e.requirementId==='caseprep2w'}),travel=T.travelAggregate(p.allEvents,'qualifier'),reiseOffen=offeneReiseTermine(p.allEvents).length,headers={kw:'KW',date:'Datum',title:'Termin',location:'Ort',status:'Status',travel:'Dienstreise',category:'Kategorie',participant:'Teilnehmer',notes:'Notizen'},keys=Object.keys(headers).filter(function(k){return cols[k]});function cell(k,e){if(k==='kw')return 'KW '+(e.sourceKW||C.computedKW(e));if(k==='date')return fmtRange(e);if(k==='title')return e.title;if(k==='location')return e.location||'–';if(k==='status')return statusLabel(e);if(k==='travel')return travelShort(e);if(k==='category')return e.category||'–';if(k==='participant')return roleLabel(e);if(k==='notes')return e.notes||'';return''}return h('section',{className:cx('print-report',c.density==='compact'&&'compact',!c.optionalShade&&'no-optional-shade')},h('div',{className:'pr-head'},h('div',{className:'pr-kicker'},'Laufbahnqualifizierung · Terminübersicht'),h('h1',null,c.title||'Persönlicher Terminplan'),h('div',{className:'pr-meta'},'Planstand 15.09.2026 · Ausdruck '+todayDE()+' · '+events.length+' Einträge')),c.includeSummary&&h('div',{className:'pr-summary'},h('div',{className:'pr-stat'},h('b',null,events.filter(function(e){return e.obligation==='Pflicht'}).length),h('span',null,'Pflichtblöcke in Auswahl')),h('div',{className:'pr-stat'},h('b',null,reiseOffen?reiseOffen:travel.ready+'/'+travel.required),h('span',null,reiseOffen?'Termine mit offener Reiseplanung':'Dienstreisen vollständig geplant')),h('div',{className:'pr-stat'},h('b',null,ulb.plannedDays+'/40'),h('span',null,'ULB-Arbeitstage geplant')),h('div',{className:'pr-stat'},h('b',null,caseEvent?'terminiert':'offen'),h('span',null,'2 Wochen Verwaltungsfall'))),h('table',null,h('thead',null,h('tr',null,keys.map(function(k){return h('th',{key:k},headers[k])}))),h('tbody',null,events.map(function(e){return h('tr',{key:e.id,className:e.obligation==='Optional'?'row-optional':''},keys.map(function(k){return h('td',{key:k,className:cx((k==='kw'||k==='date'||k==='status')&&'nowrap',k==='travel'&&'travel-print')},k==='status'?h('span',{className:'pr-status'},cell(k,e)):cell(k,e))}))}))),h('div',{className:'pr-note'},'Hinweis: Grundlage ist der Ausbildungsplan Stand 15.09.2026 (Anlage 2 zur Einladung des MLR vom 16.09.2026). Welche LEL-Lehrgänge zu besuchen sind, ergibt sich aus der gelben Markierung im Plan. Dienstreiseangaben sind persönliche Planungsdaten pro Termin.'),h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.10')))}
+// =====================================================================
+// Sicherung einspielen: Vorschau, dann Übernahme in den Terminplan
+// =====================================================================
+class SicherungModal extends R.Component{
+  constructor(p){super(p);this.taste=this.taste.bind(this)}
+  componentDidMount(){document.addEventListener('keydown',this.taste);if(this.zu)this.zu.focus()}
+  componentWillUnmount(){document.removeEventListener('keydown',this.taste);var z=document.querySelector('.lq-menue > summary');if(z)z.focus()}
+  taste(e){if(e.key==='Escape')this.props.onClose()}
+  render(){
+    var self=this,p=this.props,r=p.restore,e=r.ergebnis,liste=e?e.liste.slice(0,12):[];
+    var zahl=function(n,w){return n+' '+(n===1?w[0]:w[1])};
+    return h('div',{className:'modal-backdrop',onMouseDown:function(ev){if(ev.target===ev.currentTarget)p.onClose()}},
+      h('div',{className:'modal',role:'dialog','aria-modal':'true','aria-labelledby':'lq-sicherung-titel'},
+        h('div',{className:'modal-head'},
+          h('div',null,h('div',{className:'eyebrow'},'Sicherung einspielen'),h('h2',{id:'lq-sicherung-titel'},r.name||'Datei')),
+          h('button',{type:'button',className:'iconbtn',ref:function(n){self.zu=n},onClick:p.onClose,'aria-label':'Schließen'},h(Icon,{name:'close'}))),
+        r.fehler
+          ?h('p',{className:'lq-sicherung__fehler',role:'alert'},r.fehler)
+          :h('div',null,
+            h('p',null,h('b',null,zahl(e.neu,['Termin kommt neu hinzu','Termine kommen neu hinzu'])),', ',
+              zahl(e.aktualisiert,['wird aktualisiert','werden aktualisiert']),
+              e.uebersprungen?', '+zahl(e.uebersprungen,['Eintrag bleibt außen vor','Einträge bleiben außen vor'])+' (unvollständig oder aus einem älteren Plan)':'',
+              '. Alle anderen Termine bleiben erhalten.'),
+            liste.length?h('ul',{className:'lq-sicherung__liste'},liste.map(function(x,i){
+              return h('li',{key:i},h('span',{className:'lq-sicherung__art'},x.art==='neu'?'neu':'aktualisiert'),' ',x.titel,' ',h('span',{className:'lq-sicherung__wann'},fmtKurz(x)))})):null,
+            e.liste.length>liste.length?h('p',{className:'hint'},'… und '+(e.liste.length-liste.length)+' weitere'):null,
+            r.settings?h('p',{className:'hint'},'Einstellungen aus der Datei (Absender, Ansprechpersonen, Auswahl der freiwilligen Bausteine) ersetzen die vorhandenen.'):null),
+        h('div',{className:'modal-actions'},h('div',{className:'spacer'}),
+          h(Button,{onClick:p.onClose},r.fehler?'Schließen':'Abbrechen'),
+          r.fehler?null:h(Button,{kind:'primary',icon:'check',onClick:p.onApply},'Einspielen'))));
+  }
+}
+function PrintReport(p){var c=p.config,events=p.events,cols=c.columns,ulb=C.requirementProgress(p.allEvents,'ulb8',40),caseEvent=p.allEvents.find(function(e){return e.requirementId==='caseprep2w'}),travel=T.travelAggregate(p.allEvents,'qualifier'),reiseOffen=offeneReiseTermine(p.allEvents).length,headers={kw:'KW',date:'Datum',title:'Termin',location:'Ort',status:'Status',travel:'Dienstreise',category:'Kategorie',participant:'Teilnehmer',notes:'Notizen'},keys=Object.keys(headers).filter(function(k){return cols[k]});function cell(k,e){if(k==='kw')return 'KW '+(e.sourceKW||C.computedKW(e));if(k==='date')return fmtRange(e);if(k==='title')return e.title;if(k==='location')return e.location||'–';if(k==='status')return statusLabel(e);if(k==='travel')return travelShort(e);if(k==='category')return e.category||'–';if(k==='participant')return roleLabel(e);if(k==='notes')return e.notes||'';return''}return h('section',{className:cx('print-report',c.density==='compact'&&'compact',!c.optionalShade&&'no-optional-shade')},h('div',{className:'pr-head'},h('div',{className:'pr-kicker'},'Laufbahnqualifizierung · Terminübersicht'),h('h1',null,c.title||'Persönlicher Terminplan'),h('div',{className:'pr-meta'},'Planstand 15.09.2026 · Ausdruck '+todayDE()+' · '+events.length+' Einträge')),c.includeSummary&&h('div',{className:'pr-summary'},h('div',{className:'pr-stat'},h('b',null,events.filter(function(e){return e.obligation==='Pflicht'}).length),h('span',null,'Pflichtblöcke in Auswahl')),h('div',{className:'pr-stat'},h('b',null,reiseOffen?reiseOffen:travel.ready+'/'+travel.required),h('span',null,reiseOffen?'Termine mit offener Reiseplanung':'Dienstreisen vollständig geplant')),h('div',{className:'pr-stat'},h('b',null,ulb.plannedDays+'/40'),h('span',null,'ULB-Arbeitstage geplant')),h('div',{className:'pr-stat'},h('b',null,caseEvent?'terminiert':'offen'),h('span',null,'2 Wochen Verwaltungsfall'))),h('table',null,h('thead',null,h('tr',null,keys.map(function(k){return h('th',{key:k},headers[k])}))),h('tbody',null,events.map(function(e){return h('tr',{key:e.id,className:e.obligation==='Optional'?'row-optional':''},keys.map(function(k){return h('td',{key:k,className:cx((k==='kw'||k==='date'||k==='status')&&'nowrap',k==='travel'&&'travel-print')},k==='status'?h('span',{className:'pr-status'},cell(k,e)):cell(k,e))}))}))),h('div',{className:'pr-note'},'Hinweis: Grundlage ist der Ausbildungsplan Stand 15.09.2026 (Anlage 2 zur Einladung des MLR vom 16.09.2026). Welche LEL-Lehrgänge zu besuchen sind, ergibt sich aus der gelben Markierung im Plan. Dienstreiseangaben sind persönliche Planungsdaten pro Termin.'),h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.11')))}
 
 class OptionsModal extends R.Component{
   constructor(p){super(p);this.state={draft:Object.assign({},p.settings,{selectedOptionalIds:(p.settings.selectedOptionalIds||[]).slice()})};this.save=this.save.bind(this)}
@@ -783,8 +816,8 @@ class App extends R.Component{
     var naechster=chronologisch(meineTermine(events,settings)).find(function(e){return e.start&&e.end>=T.heute()});
     var monat=naechster?C.parseDateOnly(naechster.start):new Date(2026,10,1);
     this.state={events:events,settings:settings,view:v,search:'',filter:ladeFilter(),optionsOpen:false,editing:null,creating:null,
-      calendarMonth:new Date(monat.getFullYear(),monat.getMonth(),1),icsOpen:false,pdfOpen:false,abwOpen:false,printReport:null,vorlage:null};
-    ['setView','setFilter','saveEvent','removeEvent','exportICS','printPdf','runPrint','reset','addUlb','addCase','saveSettings','patchTravel','sammelReise','openVorlage','erledigt']
+      calendarMonth:new Date(monat.getFullYear(),monat.getMonth(),1),icsOpen:false,pdfOpen:false,abwOpen:false,printReport:null,vorlage:null,restore:null};
+    ['setView','setFilter','saveEvent','removeEvent','exportICS','printPdf','runPrint','reset','addUlb','addCase','saveSettings','patchTravel','sammelReise','openVorlage','erledigt','dateiGewaehlt','sicherungEinspielen']
       .forEach(function(n){this[n]=this[n].bind(this)},this);
   }
   componentDidMount(){if(window.bwNav)window.bwNav.init()}
@@ -806,6 +839,32 @@ class App extends R.Component{
   addUlb(){this.setState({creating:{id:uid(),title:'ULB-Abordnung – Block',start:'',end:'',sourceKW:'',category:'ULB-Abordnung',obligation:'Pflicht',statusOrigin:'manual',relevance:'Qualifizierer',requirementId:'ulb8',creditDays:'',location:'',travel:{required:'open'},notes:'Teil der insgesamt 8 Wochen ULB-Abordnung. Die Abordnung darf auf mehrere Blöcke verteilt werden.'}})}
   addCase(){this.setState({creating:{id:uid(),title:'Fallbearbeitung Verwaltungsprüfung an ULB',start:'',end:'',sourceKW:'',category:'Verwaltungsfall',obligation:'Pflicht',statusOrigin:'manual',relevance:'Qualifizierer',requirementId:'caseprep2w',location:'ULB',travel:{required:'open'},notes:'Persönliche zweiwöchige Fallbearbeitung zur Vorbereitung auf die praktische Verwaltungsprüfung.'}})}
   exportICS(){this.setState({icsOpen:true})}
+  // Sicherung einspielen: Datei lesen, Vorschau zeigen, erst dann übernehmen.
+  dateiGewaehlt(ev){
+    var self=this,input=ev.target,datei=input.files&&input.files[0];
+    if(!datei)return;
+    var leser=new FileReader(),name=datei.name;
+    leser.onload=function(){
+      var r={name:name};
+      try{
+        var d=JSON.parse(String(leser.result||''));
+        if(!d||typeof d!=='object'||!Array.isArray(d.events))throw new Error('format');
+        r.ergebnis=C.mergeBackup(self.state.events,d.events,{plan:D.makeDefaultEvents()});
+        r.settings=(d.settings&&typeof d.settings==='object')?d.settings:null;
+        if(!r.ergebnis.neu&&!r.ergebnis.aktualisiert&&!r.settings)r.fehler='Die Datei enthält keine verwertbaren Termine. Erwartet wird eine Sicherung aus diesem Terminplan (JSON mit „events“).';
+      }catch(e){r.fehler='Die Datei ließ sich nicht lesen. Erwartet wird eine Sicherung aus diesem Terminplan (JSON mit „events“).'}
+      self.setState({restore:r});
+    };
+    leser.onerror=function(){self.setState({restore:{name:name,fehler:'Die Datei konnte nicht geöffnet werden. Bitte noch einmal versuchen.'}})};
+    leser.readAsText(datei);
+    input.value='';
+  }
+  sicherungEinspielen(){
+    var r=this.state.restore;if(!r||r.fehler)return;
+    var events=ergaenzeReferenz(r.ergebnis.events),settings=this.state.settings;
+    if(r.settings){settings=Object.assign({},settings,r.settings);if(!Array.isArray(settings.selectedOptionalIds))settings.selectedOptionalIds=this.state.settings.selectedOptionalIds}
+    this.setState({events:events,settings:settings,restore:null});
+  }
   printPdf(){this.setState({pdfOpen:true})}
   runPrint(config,events){var self=this,style=document.getElementById('lq-print-page-style');if(!style){style=document.createElement('style');style.id='lq-print-page-style';document.head.appendChild(style)}style.textContent='@page{size:A4 '+(config.orientation==='portrait'?'portrait':'landscape')+';margin:12mm}';document.body.classList.add('lq-printing');this.setState({printReport:{config:config,events:events}},function(){var cleanup=function(){document.body.classList.remove('lq-printing');self.setState({printReport:null});window.removeEventListener('afterprint',cleanup)};window.addEventListener('afterprint',cleanup);setTimeout(function(){window.print()},80);setTimeout(function(){if(document.body.classList.contains('lq-printing'))cleanup()},3000)})}
   render(){
@@ -833,14 +892,16 @@ class App extends R.Component{
       h('main',{className:'bw-app bw-app--weit lq-inhalt',id:'inhalt'},
         h('div',{className:'lq-titelzeile'},
           h('div',null,h('div',{className:'eyebrow'},'Laufbahnqualifizierung · Qualifizierer'),h('h1',null,'Terminplan 2026/27')),
-          h(Badge,{kind:'neutral'},'V2.10 · Plan 15.09.2026')),
+          h(Badge,{kind:'neutral'},'V2.11 · Plan 15.09.2026')),
         h(Werkzeugleiste,{
           search:s.search,
           setSearch:function(v){self.setState({search:v,view:(v&&!mitFilter)?'overview':s.view})},
           openOptions:function(){self.setState({optionsOpen:true})},
           onNeu:function(){self.setState({creating:{id:uid(),title:'',start:'2027-01-01',end:'2027-01-01',sourceKW:'',category:'Sonstiges',obligation:'Pflicht',statusOrigin:'manual',relevance:'Qualifizierer',location:'',travel:{required:'open'},notes:''}})},
           onIcs:this.exportICS,onPdf:this.printPdf,onAbw:function(){self.setState({abwOpen:true})},
-          onBackup:function(){download('laufbahnqualifizierung_sicherung.json','application/json',JSON.stringify({version:'2.10',events:s.events,settings:s.settings},null,2))}}),
+          onBackup:function(){download('laufbahnqualifizierung_sicherung.json','application/json',JSON.stringify({version:'2.11',events:s.events,settings:s.settings},null,2))},
+          onRestore:function(){if(self.datei)self.datei.click()}}),
+        h('input',{type:'file',accept:'.json,application/json',className:'lq-sr',tabIndex:-1,'aria-hidden':'true',ref:function(n){self.datei=n},onChange:this.dateiGewaehlt}),
         mitFilter?h(FilterLeiste,{filter:s.filter,events:s.events,settings:settings,onChange:this.setFilter}):null,
         ansicht),
       h('footer',{className:'bw-footer'},
@@ -850,6 +911,7 @@ class App extends R.Component{
       s.printReport?(s.printReport.config.typ==='abw'
         ?h(AbwesenheitBericht,{daten:A.berechnen(s.events),settings:settings})
         :h(PrintReport,{config:s.printReport.config,events:s.printReport.events,allEvents:s.events})):null,
+      s.restore?h(SicherungModal,{restore:s.restore,onClose:function(){self.setState({restore:null})},onApply:this.sicherungEinspielen}):null,
       s.abwOpen?h(AbwesenheitModal,{daten:A.berechnen(s.events),settings:settings,onClose:function(){self.setState({abwOpen:false})},
         onPrint:function(){self.setState({abwOpen:false});self.runPrint({orientation:'portrait',typ:'abw'},[])}}):null,
       s.icsOpen?h(IcsExportModal,{events:s.events,currentFilters:{visibleIds:currentIds,search:s.search,year:'all'},currentEvents:zeitlich,settings:settings,onClose:function(){self.setState({icsOpen:false})}}):null,

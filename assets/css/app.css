@@ -446,6 +446,13 @@
 .lq-abw-hinweise { margin: var(--bw-space-2) 0 0; padding-left: 1.2em; font-size: var(--bw-fs-klein); color: var(--bw-text-leise); }
 .lq-abw-hinweise li + li { margin-top: var(--bw-space-1); }
 
+/* ===================== Sicherung einspielen ======================== */
+.lq-sicherung__liste { margin: var(--bw-space-2) 0 0; padding-left: 1.2em; font-size: var(--bw-fs-klein); }
+.lq-sicherung__liste li + li { margin-top: 2px; }
+.lq-sicherung__art { display: inline-block; min-width: 6.5em; font-size: var(--bw-fs-mini); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--bw-text-leise); }
+.lq-sicherung__wann { color: var(--bw-text-leise); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lq-sicherung__fehler { margin: var(--bw-space-2) 0 0; padding: var(--bw-space-2); border-left: 4px solid var(--bw-fehler); background: var(--bw-grau-50); font-size: var(--bw-fs-klein); }
+
 /* ===================== Responsiv =================================== */
 
 @media (max-width: 900px) {
