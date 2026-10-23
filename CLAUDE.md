@@ -172,8 +172,10 @@ sichtbarer Fokus, Skip-Link; `prefers-reduced-motion` respektieren.
 
 > **Hinweis für dieses Repository:** `qualifizierungsplaner` ist **öffentlich**
 > (GitHub Pages). Schriften und Logo sind deshalb per `.gitignore`
-> ausgeschlossen und dürfen hier **nicht** committet werden. Theme-Fallbacks
-> und Wortmarke greifen automatisch. Details im README.
+> ausgeschlossen und dürfen hier **nicht** committet werden. Das Tool ist eine
+> **private Planungshilfe** (kein offizielles Angebot) und nutzt deshalb kein
+> Behördenlogo, sondern eine eigene Wortmarke. Theme-Fallbacks greifen
+> automatisch. Details im README.
 
 ---
 

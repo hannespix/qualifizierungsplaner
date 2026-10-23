@@ -2,7 +2,7 @@
 'use strict';
 var R=window.React, RD=window.ReactDOM, C=window.LQCore, D=window.LQData, X=window.LQExport, T=window.LQTravel, M=window.LQMail, A=window.LQAbwesenheit;
 if(!R||!RD||!C||!D||!X||!T||!M||!A){ document.getElementById('root').innerHTML='<div class="fatal"><b>Dashboard konnte nicht gestartet werden.</b><p>Interne Komponenten fehlen.</p></div>'; return; }
-var h=R.createElement, STORAGE='lq-dashboard-v28-events', LEGACY_STORAGE=['lq-dashboard-v27-events','lq-dashboard-v26-events','lq-dashboard-v25-events'], VIEW='lq-dashboard-v29-view', VIEW_OLD='lq-dashboard-v28-view', FILTER='lq-dashboard-v29-filter', SETTINGS='LQ_SETTINGS_V26';
+var h=R.createElement, STORAGE='lq-dashboard-v28-events', LEGACY_STORAGE=['lq-dashboard-v27-events','lq-dashboard-v26-events','lq-dashboard-v25-events'], VIEW='lq-dashboard-v29-view', VIEW_OLD='lq-dashboard-v28-view', FILTER='lq-dashboard-v29-filter', SETTINGS='LQ_SETTINGS_V26', GELOESCHT='lq-dashboard-geloescht';
 var MONTHS=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 function cx(){return Array.prototype.slice.call(arguments).filter(Boolean).join(' ')}
 var PLAN_ID_REMAP={lel07:'lel08',lel44:'lel45',verw45:'verw46',lel11:'bw2kw11'};
@@ -26,9 +26,28 @@ function migratePlanEvents(stored){
 // Gespeicherte Referenztermine bekommen neue Plan-Metadaten (z. B. Aufgabe,
 // Vorlage) nachgereicht. Persönliche Angaben bleiben unberührt.
 function ergaenzeReferenz(liste){var ref={};D.makeDefaultEvents().forEach(function(e){ref[e.id]=e});return liste.map(function(e){var r=e&&ref[e.id];if(!r)return e;var x=e;['aufgabe','vorlage','tageLQ','abwHinweis'].forEach(function(k){if(r[k]!==undefined&&x[k]===undefined){if(x===e)x=Object.assign({},e);x[k]=r[k]}});return x})}
+// Frühere Kennungen aus der Planungsdatei bzw. dem alten Planfenster gehen in
+// den jetzt fest hinterlegten Terminen auf (persönliche Angaben wandern mit).
+var ALT_IDS={'ulb-emmendingen-2027-1':'ulb27a','ulb-emmendingen-2027-2':'ulb27b','ulb-breisach-2027-1':'ulb27c','ulb-breisach-2027-2':'ulb27d','vorbereitung-breisach-2027':'vorb48',prep48:'vorb48'};
+var PERSOENLICH=['travel','done','startTime','endTime','einladenPflicht','einladenOptional'];
+function ladeGeloescht(){try{var x=JSON.parse(localStorage.getItem(GELOESCHT)||'[]');return Array.isArray(x)?x:[]}catch(e){return []}}
+function merkeGeloescht(liste){try{localStorage.setItem(GELOESCHT,JSON.stringify(liste))}catch(e){}}
+// Neue Termine des Plans kommen in bestehende Datenbestände, es sei denn,
+// sie wurden dort bewusst gelöscht.
+function planErgaenzen(liste){
+  var plan=D.makeDefaultEvents(),geloescht=ladeGeloescht(),vorhanden={},alt={};
+  liste=liste.filter(function(e){if(!e||!e.id)return false;var neu=ALT_IDS[e.id];if(neu){alt[neu]=e;return false}vorhanden[e.id]=true;return true});
+  plan.forEach(function(p){
+    if(vorhanden[p.id]||geloescht.indexOf(p.id)>=0)return;
+    var x=Object.assign({},p),a=alt[p.id];
+    if(a)PERSOENLICH.forEach(function(k){if(a[k]!==undefined)x[k]=a[k]});
+    liste.push(x);
+  });
+  return liste;
+}
 function safeLoad(){try{
   var raw=localStorage.getItem(STORAGE);
-  if(raw){var x=JSON.parse(raw);if(Array.isArray(x))return ergaenzeReferenz(x)}
+  if(raw){var x=JSON.parse(raw);if(Array.isArray(x))return planErgaenzen(ergaenzeReferenz(x))}
   for(var i=0;i<LEGACY_STORAGE.length;i++){
     var old=localStorage.getItem(LEGACY_STORAGE[i]);
     if(old){var y=JSON.parse(old);if(Array.isArray(y))return migratePlanEvents(y)}
@@ -470,20 +489,8 @@ function Werkzeugleiste(p){
 }
 
 function assetUrl(pfad){var m=window.BW_ASSETS||{};return m[pfad]||pfad}
-// Das RPF-Logo ist lizenzrechtlich geschützt und liegt deshalb nicht in
-// diesem öffentlichen Repo (assets/logo/LIZENZ.md). Fehlt die Datei, tritt
-// eine reine Wortmarke an ihre Stelle — das Logo wird nie nachgebaut.
-class Marke extends R.Component{
-  constructor(p){super(p);this.state={bild:true};this.fehler=this.fehler.bind(this)}
-  fehler(){this.setState({bild:false})}
-  render(){
-    var neg=this.props.negativ;
-    if(this.state.bild)return h('img',{className:cx('bw-logo',neg&&'bw-logo--neg'),
-      src:assetUrl(neg?'assets/logo/rpf-logo-negativ.png':'assets/logo/rpf-logo.png'),
-      alt:'Regierungspräsidium Freiburg, Baden-Württemberg',onError:this.fehler});
-    return h('span',{className:'lq-wortmarke'},h('b',null,'Regierungspräsidium Freiburg'),h('span',null,'Land Baden-Württemberg'));
-  }
-}
+// Private Planungshilfe: kein Behördenlogo, nur die Wortmarke.
+function Marke(){return h('span',{className:'lq-wortmarke'},h('b',null,'Hannes Pix'),h('span',null,'Private Planungshilfe · Laufbahnqualifizierung gD'))}
 
 function Kopfnavigation(p){
   return h('header',{className:'lq-kopf'},
@@ -599,7 +606,7 @@ function AbwesenheitHinweise(p){
   if(d.offen)liste.push(d.ulbGeplant
     ?'ULB-Abordnung: '+d.ulbGeplant+' von '+d.ulbSoll+' Arbeitstagen terminiert, der Rest ist in der Summe enthalten.'
     :'Die ULB-Abordnung (8 Wochen) ist noch nicht terminiert; ihre '+d.ulbSoll+' Arbeitstage sind in der Summe enthalten.');
-  if(d.ohneVorbereitung!==d.gesamt)liste.push('Ohne Prüfungsvorbereitung: '+zahlTage(d.ohneVorbereitung)+'. Den Verwaltungsvorgang bearbeitest du laut Plan an der Stammdienststelle – ob die zwei Wochen als Abwesenheit gelten, hängt davon ab, wo du ihn bearbeitest.');
+  if(d.ohneVorbereitung!==d.gesamt)liste.push('Ohne Prüfungsvorbereitung: '+zahlTage(d.ohneVorbereitung)+'. Der offizielle Plan ordnet die zwei Wochen der Stammdienststelle zu; in dieser Planung finden sie an der ULB statt.');
   d.ueberschneidungen.forEach(function(u){liste.push('Achtung: „'+u.a+'“ und „'+u.b+'“ überschneiden sich – gemeinsame Tage zählen doppelt.')});
   return h('ul',{className:cx('lq-abw-hinweise',p.druck&&'pr-note')},liste.map(function(t,i){return h('li',{key:i},t)}));
 }
@@ -637,7 +644,7 @@ function AbwesenheitBericht(p){
     h('div',{className:'pr-summary'},abwKacheln(d).map(function(k){return h('div',{key:k.text,className:'pr-stat'},h('b',null,k.wert),h('span',null,k.text))})),
     h(AbwesenheitTabelle,{daten:d}),
     h(AbwesenheitHinweise,{daten:d,druck:true}),
-    h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.13')));
+    h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.14')));
 }
 // =====================================================================
 // Sicherung einspielen: Vorschau, dann Übernahme in den Terminplan
@@ -671,7 +678,7 @@ class SicherungModal extends R.Component{
           r.fehler?null:h(Button,{kind:'primary',icon:'check',onClick:p.onApply},'Einspielen'))));
   }
 }
-function PrintReport(p){var c=p.config,events=p.events,cols=c.columns,ulb=C.requirementProgress(p.allEvents,'ulb8',40),caseEvent=p.allEvents.find(function(e){return e.requirementId==='caseprep2w'}),travel=T.travelAggregate(p.allEvents,'qualifier'),reiseOffen=offeneReiseTermine(p.allEvents).length,headers={kw:'KW',date:'Datum',title:'Termin',location:'Ort',status:'Status',travel:'Dienstreise',category:'Kategorie',participant:'Teilnehmer',notes:'Notizen'},keys=Object.keys(headers).filter(function(k){return cols[k]});function cell(k,e){if(k==='kw')return 'KW '+(e.sourceKW||C.computedKW(e));if(k==='date')return fmtRange(e);if(k==='title')return e.title;if(k==='location')return e.location||'–';if(k==='status')return statusLabel(e);if(k==='travel')return travelShort(e);if(k==='category')return e.category||'–';if(k==='participant')return roleLabel(e);if(k==='notes')return e.notes||'';return''}return h('section',{className:cx('print-report',c.density==='compact'&&'compact',!c.optionalShade&&'no-optional-shade')},h('div',{className:'pr-head'},h('div',{className:'pr-kicker'},'Laufbahnqualifizierung · Terminübersicht'),h('h1',null,c.title||'Persönlicher Terminplan'),h('div',{className:'pr-meta'},'Planstand 15.09.2026 · Ausdruck '+todayDE()+' · '+events.length+' Einträge')),c.includeSummary&&h('div',{className:'pr-summary'},h('div',{className:'pr-stat'},h('b',null,events.filter(function(e){return e.obligation==='Pflicht'}).length),h('span',null,'Pflichtblöcke in Auswahl')),h('div',{className:'pr-stat'},h('b',null,reiseOffen?reiseOffen:travel.ready+'/'+travel.required),h('span',null,reiseOffen?'Termine mit offener Reiseplanung':'Dienstreisen vollständig geplant')),h('div',{className:'pr-stat'},h('b',null,ulb.plannedDays+'/40'),h('span',null,'ULB-Arbeitstage geplant')),h('div',{className:'pr-stat'},h('b',null,caseEvent?'terminiert':'offen'),h('span',null,'2 Wochen Verwaltungsfall'))),h('table',null,h('thead',null,h('tr',null,keys.map(function(k){return h('th',{key:k},headers[k])}))),h('tbody',null,events.map(function(e){return h('tr',{key:e.id,className:e.obligation==='Optional'?'row-optional':''},keys.map(function(k){return h('td',{key:k,className:cx((k==='kw'||k==='date'||k==='status')&&'nowrap',k==='travel'&&'travel-print')},k==='status'?h('span',{className:'pr-status'},cell(k,e)):cell(k,e))}))}))),h('div',{className:'pr-note'},'Hinweis: Grundlage ist der Ausbildungsplan Stand 15.09.2026 (Anlage 2 zur Einladung des MLR vom 16.09.2026). Welche LEL-Lehrgänge zu besuchen sind, ergibt sich aus der gelben Markierung im Plan. Dienstreiseangaben sind persönliche Planungsdaten pro Termin.'),h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.13')))}
+function PrintReport(p){var c=p.config,events=p.events,cols=c.columns,ulb=C.requirementProgress(p.allEvents,'ulb8',40),caseEvent=p.allEvents.find(function(e){return e.requirementId==='caseprep2w'}),travel=T.travelAggregate(p.allEvents,'qualifier'),reiseOffen=offeneReiseTermine(p.allEvents).length,headers={kw:'KW',date:'Datum',title:'Termin',location:'Ort',status:'Status',travel:'Dienstreise',category:'Kategorie',participant:'Teilnehmer',notes:'Notizen'},keys=Object.keys(headers).filter(function(k){return cols[k]});function cell(k,e){if(k==='kw')return 'KW '+(e.sourceKW||C.computedKW(e));if(k==='date')return fmtRange(e);if(k==='title')return e.title;if(k==='location')return e.location||'–';if(k==='status')return statusLabel(e);if(k==='travel')return travelShort(e);if(k==='category')return e.category||'–';if(k==='participant')return roleLabel(e);if(k==='notes')return e.notes||'';return''}return h('section',{className:cx('print-report',c.density==='compact'&&'compact',!c.optionalShade&&'no-optional-shade')},h('div',{className:'pr-head'},h('div',{className:'pr-kicker'},'Laufbahnqualifizierung · Terminübersicht'),h('h1',null,c.title||'Persönlicher Terminplan'),h('div',{className:'pr-meta'},'Planstand 15.09.2026 · Ausdruck '+todayDE()+' · '+events.length+' Einträge')),c.includeSummary&&h('div',{className:'pr-summary'},h('div',{className:'pr-stat'},h('b',null,events.filter(function(e){return e.obligation==='Pflicht'}).length),h('span',null,'Pflichtblöcke in Auswahl')),h('div',{className:'pr-stat'},h('b',null,reiseOffen?reiseOffen:travel.ready+'/'+travel.required),h('span',null,reiseOffen?'Termine mit offener Reiseplanung':'Dienstreisen vollständig geplant')),h('div',{className:'pr-stat'},h('b',null,ulb.plannedDays+'/40'),h('span',null,'ULB-Arbeitstage geplant')),h('div',{className:'pr-stat'},h('b',null,caseEvent?'terminiert':'offen'),h('span',null,'2 Wochen Verwaltungsfall'))),h('table',null,h('thead',null,h('tr',null,keys.map(function(k){return h('th',{key:k},headers[k])}))),h('tbody',null,events.map(function(e){return h('tr',{key:e.id,className:e.obligation==='Optional'?'row-optional':''},keys.map(function(k){return h('td',{key:k,className:cx((k==='kw'||k==='date'||k==='status')&&'nowrap',k==='travel'&&'travel-print')},k==='status'?h('span',{className:'pr-status'},cell(k,e)):cell(k,e))}))}))),h('div',{className:'pr-note'},'Hinweis: Grundlage ist der Ausbildungsplan Stand 15.09.2026 (Anlage 2 zur Einladung des MLR vom 16.09.2026). Welche LEL-Lehrgänge zu besuchen sind, ergibt sich aus der gelben Markierung im Plan. Dienstreiseangaben sind persönliche Planungsdaten pro Termin.'),h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.14')))}
 
 class OptionsModal extends R.Component{
   constructor(p){super(p);this.state={draft:Object.assign({},p.settings,{selectedOptionalIds:(p.settings.selectedOptionalIds||[]).slice()})};this.save=this.save.bind(this)}
@@ -855,7 +862,8 @@ class App extends R.Component{
     ['setView','setFilter','saveEvent','removeEvent','exportICS','printPdf','runPrint','reset','addUlb','addCase','saveSettings','patchTravel','sammelReise','openVorlage','erledigt','dateiGewaehlt','sicherungEinspielen']
       .forEach(function(n){this[n]=this[n].bind(this)},this);
   }
-  componentDidMount(){if(window.bwNav)window.bwNav.init()}
+  // Beim Laden nachgereichte Plantermine sofort sichern, nicht erst bei der nächsten Änderung.
+  componentDidMount(){safeSave(this.state.events);if(window.bwNav)window.bwNav.init()}
   componentDidUpdate(prevP,prevS){if(prevS.events!==this.state.events)safeSave(this.state.events);if(prevS.settings!==this.state.settings)safeSaveSettings(this.state.settings);if(window.bwNav)window.bwNav.init()}
   merkeAnsicht(v){try{localStorage.setItem(VIEW,v)}catch(e){}}
   setView(v){this.setState({view:v,vorlage:null});this.merkeAnsicht(v);window.scrollTo(0,0)}
@@ -869,8 +877,8 @@ class App extends R.Component{
     if(a.erledigen)this.setState({events:this.state.events.map(function(e){return e.id===a.erledigen?Object.assign({},e,{done:true}):e})});
   }
   saveEvent(incoming){var prev=this.state.events,i=prev.findIndex(function(x){return x.id===incoming.id}),next=prev.slice(),settings=this.state.settings;if(i<0)next.push(incoming);else next[i]=C.mergePlanEvent(prev[i],incoming,{mode:'manual'});if(i<0&&incoming.obligation==='Optional'&&(incoming.relevance||'Beide')!=='Anwärter'&&settings.selectedOptionalIds.indexOf(incoming.id)<0)settings=Object.assign({},settings,{selectedOptionalIds:settings.selectedOptionalIds.concat([incoming.id])});this.setState({events:next,settings:settings,editing:null,creating:null})}
-  removeEvent(id){this.setState({events:this.state.events.filter(function(x){return x.id!==id}),settings:Object.assign({},this.state.settings,{selectedOptionalIds:this.state.settings.selectedOptionalIds.filter(function(x){return x!==id})}),editing:null})}
-  reset(){if(confirm('Alle eigenen Änderungen verwerfen und den Ausbildungsplan wiederherstellen? Absender und Ansprechpersonen bleiben erhalten.')){var events=D.makeDefaultEvents(),alt=this.state.settings,neu=defaultSettings(events);['absName','absEmail','absDienststelle','absTelefon','vgName','vgEmail','vwEmail','alEmail'].forEach(function(k){neu[k]=alt[k]||''});this.setState({events:events,settings:neu,optionsOpen:false})}}
+  removeEvent(id){if(D.makeDefaultEvents().some(function(e){return e.id===id})){var g=ladeGeloescht();if(g.indexOf(id)<0)g.push(id);merkeGeloescht(g)}this.setState({events:this.state.events.filter(function(x){return x.id!==id}),settings:Object.assign({},this.state.settings,{selectedOptionalIds:this.state.settings.selectedOptionalIds.filter(function(x){return x!==id})}),editing:null})}
+  reset(){if(confirm('Alle eigenen Änderungen verwerfen und den Ausbildungsplan wiederherstellen? Absender und Ansprechpersonen bleiben erhalten.')){var events=D.makeDefaultEvents(),alt=this.state.settings,neu=defaultSettings(events);merkeGeloescht([]);['absName','absEmail','absDienststelle','absTelefon','vgName','vgEmail','vwEmail','alEmail'].forEach(function(k){neu[k]=alt[k]||''});this.setState({events:events,settings:neu,optionsOpen:false})}}
   addUlb(){this.setState({creating:{id:uid(),title:'ULB-Abordnung – Block',start:'',end:'',sourceKW:'',category:'ULB-Abordnung',obligation:'Pflicht',statusOrigin:'manual',relevance:'Qualifizierer',requirementId:'ulb8',creditDays:'',location:'',travel:{required:'open'},notes:'Teil der insgesamt 8 Wochen ULB-Abordnung. Die Abordnung darf auf mehrere Blöcke verteilt werden.'}})}
   addCase(){this.setState({creating:{id:uid(),title:'Fallbearbeitung Verwaltungsprüfung an ULB',start:'',end:'',sourceKW:'',category:'Verwaltungsfall',obligation:'Pflicht',statusOrigin:'manual',relevance:'Qualifizierer',requirementId:'caseprep2w',location:'ULB',travel:{required:'open'},notes:'Persönliche zweiwöchige Fallbearbeitung zur Vorbereitung auf die praktische Verwaltungsprüfung.'}})}
   exportICS(){this.setState({icsOpen:true})}
@@ -896,7 +904,7 @@ class App extends R.Component{
   }
   sicherungEinspielen(){
     var r=this.state.restore;if(!r||r.fehler)return;
-    var events=ergaenzeReferenz(r.ergebnis.events),settings=this.state.settings;
+    var events=planErgaenzen(ergaenzeReferenz(r.ergebnis.events)),settings=this.state.settings;
     if(r.settings){settings=Object.assign({},settings,r.settings);if(!Array.isArray(settings.selectedOptionalIds))settings.selectedOptionalIds=this.state.settings.selectedOptionalIds}
     this.setState({events:events,settings:settings,restore:null});
   }
@@ -927,14 +935,14 @@ class App extends R.Component{
       h('main',{className:'bw-app bw-app--weit lq-inhalt',id:'inhalt'},
         h('div',{className:'lq-titelzeile'},
           h('div',null,h('div',{className:'eyebrow'},'Laufbahnqualifizierung · Qualifizierer'),h('h1',null,'Terminplan 2026/27')),
-          h(Badge,{kind:'neutral'},'V2.13 · Plan 15.09.2026')),
+          h(Badge,{kind:'neutral'},'V2.14 · Plan 15.09.2026')),
         h(Werkzeugleiste,{
           search:s.search,
           setSearch:function(v){self.setState({search:v,view:(v&&!mitFilter)?'overview':s.view})},
           openOptions:function(){self.setState({optionsOpen:true})},
           onNeu:function(){self.setState({creating:{id:uid(),title:'',start:'2027-01-01',end:'2027-01-01',sourceKW:'',category:'Sonstiges',obligation:'Pflicht',statusOrigin:'manual',relevance:'Qualifizierer',location:'',travel:{required:'open'},notes:''}})},
           onIcs:this.exportICS,onPdf:this.printPdf,onAbw:function(){self.setState({abwOpen:true})},
-          onBackup:function(){download('laufbahnqualifizierung_sicherung.json','application/json',JSON.stringify({version:'2.13',events:s.events,settings:s.settings},null,2))},
+          onBackup:function(){download('laufbahnqualifizierung_sicherung.json','application/json',JSON.stringify({version:'2.14',events:s.events,settings:s.settings},null,2))},
           onRestore:function(){if(self.datei)self.datei.click()}}),
         h('input',{type:'file',accept:'.json,application/json',className:'lq-sr',tabIndex:-1,'aria-hidden':'true',ref:function(n){self.datei=n},onChange:this.dateiGewaehlt}),
         mitFilter?h(FilterLeiste,{filter:s.filter,events:s.events,settings:settings,onChange:this.setFilter}):null,
@@ -942,7 +950,7 @@ class App extends R.Component{
       h('footer',{className:'bw-footer'},
         h('div',{className:'bw-app bw-app--weit lq-footer-innen'},
           h(Marke,{negativ:true}),
-          h('span',{className:'bw-klein'},'Persönliche Daten bleiben im Browser dieses Rechners · Änderungen des Ausbildungsplans vorbehalten'))),
+          h('span',{className:'bw-klein'},'Private Planungshilfe, kein offizielles Angebot des Regierungspräsidiums Freiburg oder des Landes Baden-Württemberg · Persönliche Daten bleiben im Browser dieses Rechners · Änderungen des Ausbildungsplans vorbehalten'))),
       s.printReport?(s.printReport.config.typ==='abw'
         ?h(AbwesenheitBericht,{daten:A.berechnen(s.events),settings:settings})
         :h(PrintReport,{config:s.printReport.config,events:s.printReport.events,allEvents:s.events})):null,
