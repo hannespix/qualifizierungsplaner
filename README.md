@@ -4,6 +4,11 @@ Persönliches Planungswerkzeug für die Laufbahnqualifizierung im gehobenen
 landwirtschaftstechnischen Dienst in Baden-Württemberg. Das Werkzeug läuft
 vollständig im Browser, ohne Server und ohne Internetverbindung.
 
+**Private Planungshilfe von Hannes Pix** – kein offizielles Angebot des
+Regierungspräsidiums Freiburg oder des Landes Baden-Württemberg. Die
+hinterlegte Planung (etwa die ULB-Abordnung) ist persönlich und teilweise noch
+in Absprache.
+
 Gestaltet nach dem **Landes-CD Baden-Württemberg** (https://design.landbw.de)
 auf Basis der gemeinsamen Vorlage `Vorlage-Tool-im-Landesdesign`. Verbindlich
 sind `CLAUDE.md` (Design + Technik) und `AGENTS.md` (Prozess).
@@ -111,28 +116,24 @@ sich per Doppelklick öffnen — geeignet für Zero-Trust-Arbeitsplätze.
 ## Lizenzpflichtige Schriften und Logo
 
 **Dieses Repository ist öffentlich.** Die Schriften *BaWue Sans/Serif*
-(Luzi Type) und das RPF-Logo dürfen nicht öffentlich verteilt werden. Sie sind
-deshalb über `.gitignore` ausgeschlossen; nur die `LIZENZ.md` der beiden Ordner
-liegt im Repo.
+(Luzi Type) dürfen nicht öffentlich verteilt werden und sind über `.gitignore`
+ausgeschlossen; das Theme fällt auf die definierten System-Schriften zurück.
+Die Browser-Konsole meldet für die fehlenden Dateien `404` – erwartetes
+Verhalten, keine Fehlfunktion.
 
-Folgen im öffentlichen Stand:
+Als private Planungshilfe nutzt das Tool **kein Behördenlogo**; im Kopf und im
+Fuß steht eine eigene Wortmarke. Das RPF-Logo wird weder eingebunden noch
+nachgebaut (`assets/logo/LIZENZ.md`).
 
-- Das Theme fällt auf die definierten System-Schriften zurück.
-- Statt des Logos erscheint eine reine Wortmarke. Das Logo wird **nicht**
-  nachgebaut.
-- Die Browser-Konsole meldet für die fehlenden Dateien `404` — erwartetes
-  Verhalten, keine Fehlfunktion.
-
-Für den dienstlichen Stand die lizenzierten Dateien lokal ablegen:
+Wer die lizenzierten Schriften besitzt, legt sie lokal ab:
 
 ```
 assets/fonts/BaWueSansWeb-*.woff2 · .woff
 assets/fonts/BaWueSerifWeb-*.woff2 · .woff
-assets/logo/rpf-logo.png · rpf-logo-negativ.png
 ```
 
-Danach greifen Schriften und Logo automatisch — auch im Single-File-Build, der
-sie als data:-URLs einbettet. Personenbezogene Echtdaten gehören nie ins Repo.
+Danach greifen sie automatisch – auch im Single-File-Build, der sie als
+data:-URLs einbettet.
 
 ---
 
@@ -197,8 +198,15 @@ und die Wahlstationen sind fakultativ. Ergänzend berücksichtigt: APrOLW gD
 Für die Abwesenheiten gilt: Die Lehrgänge „Betriebswirtschaft I“ (KW 51 und
 KW 2) zählen laut Plan nur mit je 2 Tagen für die Laufbahnqualifizierung, die
 praktische Prüfung mit 1 Tag je Prüfling; in KW 10 endet die LQ am Donnerstag.
-Die zwei Wochen Prüfungsvorbereitung (KW 48–49/2027) sind im Plan der
-Stammdienststelle zugeordnet und werden deshalb auch getrennt ausgewiesen.
+Die zwei Wochen Prüfungsvorbereitung (KW 48–49/2027) ordnet der offizielle
+Plan der Stammdienststelle zu; sie werden deshalb getrennt ausgewiesen.
+
+Fest hinterlegt, aber **noch in Absprache** mit Referatsleitung, ULB und MLR:
+die ULB-Abordnung in vier Blöcken an der ULB Breisach (01.02.–19.02.,
+01.–05.03., 15.10.–05.11. und 22.–26.11.2027, zusammen 40 Arbeitstage ohne
+Feiertage) sowie die Prüfungsvorbereitung im Anschluss ebenfalls in Breisach.
+Wer die Termine löscht, bekommt sie beim nächsten Laden nicht wieder; „Plan
+wiederherstellen“ unter Optionen holt sie zurück.
 
 Beim ersten Aufruf einer neuen Planversion bleiben persönliche Eintragungen
 erhalten: eigene Termine, ULB-Blöcke, Verwaltungsfall und die Reiseplanung je
