@@ -28,7 +28,7 @@ function migratePlanEvents(stored){
 function ergaenzeReferenz(liste){var ref={};D.makeDefaultEvents().forEach(function(e){ref[e.id]=e});return liste.map(function(e){var r=e&&ref[e.id];if(!r)return e;var x=e;['aufgabe','vorlage','tageLQ','abwHinweis'].forEach(function(k){if(r[k]!==undefined&&x[k]===undefined){if(x===e)x=Object.assign({},e);x[k]=r[k]}});return x})}
 // Frühere Kennungen aus der Planungsdatei bzw. dem alten Planfenster gehen in
 // den jetzt fest hinterlegten Terminen auf (persönliche Angaben wandern mit).
-var ALT_IDS={'ulb-emmendingen-2027-1':'ulb27a','ulb-emmendingen-2027-2':'ulb27b','ulb-breisach-2027-1':'ulb27c','ulb-breisach-2027-2':'ulb27d','vorbereitung-breisach-2027':'vorb48',prep48:'vorb48'};
+var ALT_IDS={'ulb-emmendingen-2027-1':'ulb27-1','ulb-emmendingen-2027-2':'ulb27-1',ulb27a:'ulb27-1',ulb27b:'ulb27-1','ulb-breisach-2027-1':'ulb27-2a',ulb27c:'ulb27-2a','ulb-breisach-2027-2':'ulb27-2b',ulb27d:'ulb27-2b','vorbereitung-breisach-2027':'vorb48',prep48:'vorb48'};
 var PERSOENLICH=['travel','done','startTime','endTime','einladenPflicht','einladenOptional'];
 function ladeGeloescht(){try{var x=JSON.parse(localStorage.getItem(GELOESCHT)||'[]');return Array.isArray(x)?x:[]}catch(e){return []}}
 function merkeGeloescht(liste){try{localStorage.setItem(GELOESCHT,JSON.stringify(liste))}catch(e){}}
@@ -36,7 +36,8 @@ function merkeGeloescht(liste){try{localStorage.setItem(GELOESCHT,JSON.stringify
 // sie wurden dort bewusst gelöscht.
 function planErgaenzen(liste){
   var plan=D.makeDefaultEvents(),geloescht=ladeGeloescht(),vorhanden={},alt={};
-  liste=liste.filter(function(e){if(!e||!e.id)return false;var neu=ALT_IDS[e.id];if(neu){alt[neu]=e;return false}vorhanden[e.id]=true;return true});
+  // Mehrere alte Einträge können im selben neuen Termin aufgehen; persönliche Angaben werden gesammelt.
+  liste=liste.filter(function(e){if(!e||!e.id)return false;var neu=ALT_IDS[e.id];if(neu){var a=alt[neu]||{};PERSOENLICH.forEach(function(k){if(e[k]!==undefined&&a[k]===undefined)a[k]=e[k]});alt[neu]=a;return false}vorhanden[e.id]=true;return true});
   plan.forEach(function(p){
     if(vorhanden[p.id]||geloescht.indexOf(p.id)>=0)return;
     var x=Object.assign({},p),a=alt[p.id];
@@ -644,7 +645,7 @@ function AbwesenheitBericht(p){
     h('div',{className:'pr-summary'},abwKacheln(d).map(function(k){return h('div',{key:k.text,className:'pr-stat'},h('b',null,k.wert),h('span',null,k.text))})),
     h(AbwesenheitTabelle,{daten:d}),
     h(AbwesenheitHinweise,{daten:d,druck:true}),
-    h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.14')));
+    h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.15')));
 }
 // =====================================================================
 // Sicherung einspielen: Vorschau, dann Übernahme in den Terminplan
@@ -678,7 +679,7 @@ class SicherungModal extends R.Component{
           r.fehler?null:h(Button,{kind:'primary',icon:'check',onClick:p.onApply},'Einspielen'))));
   }
 }
-function PrintReport(p){var c=p.config,events=p.events,cols=c.columns,ulb=C.requirementProgress(p.allEvents,'ulb8',40),caseEvent=p.allEvents.find(function(e){return e.requirementId==='caseprep2w'}),travel=T.travelAggregate(p.allEvents,'qualifier'),reiseOffen=offeneReiseTermine(p.allEvents).length,headers={kw:'KW',date:'Datum',title:'Termin',location:'Ort',status:'Status',travel:'Dienstreise',category:'Kategorie',participant:'Teilnehmer',notes:'Notizen'},keys=Object.keys(headers).filter(function(k){return cols[k]});function cell(k,e){if(k==='kw')return 'KW '+(e.sourceKW||C.computedKW(e));if(k==='date')return fmtRange(e);if(k==='title')return e.title;if(k==='location')return e.location||'–';if(k==='status')return statusLabel(e);if(k==='travel')return travelShort(e);if(k==='category')return e.category||'–';if(k==='participant')return roleLabel(e);if(k==='notes')return e.notes||'';return''}return h('section',{className:cx('print-report',c.density==='compact'&&'compact',!c.optionalShade&&'no-optional-shade')},h('div',{className:'pr-head'},h('div',{className:'pr-kicker'},'Laufbahnqualifizierung · Terminübersicht'),h('h1',null,c.title||'Persönlicher Terminplan'),h('div',{className:'pr-meta'},'Planstand 15.09.2026 · Ausdruck '+todayDE()+' · '+events.length+' Einträge')),c.includeSummary&&h('div',{className:'pr-summary'},h('div',{className:'pr-stat'},h('b',null,events.filter(function(e){return e.obligation==='Pflicht'}).length),h('span',null,'Pflichtblöcke in Auswahl')),h('div',{className:'pr-stat'},h('b',null,reiseOffen?reiseOffen:travel.ready+'/'+travel.required),h('span',null,reiseOffen?'Termine mit offener Reiseplanung':'Dienstreisen vollständig geplant')),h('div',{className:'pr-stat'},h('b',null,ulb.plannedDays+'/40'),h('span',null,'ULB-Arbeitstage geplant')),h('div',{className:'pr-stat'},h('b',null,caseEvent?'terminiert':'offen'),h('span',null,'2 Wochen Verwaltungsfall'))),h('table',null,h('thead',null,h('tr',null,keys.map(function(k){return h('th',{key:k},headers[k])}))),h('tbody',null,events.map(function(e){return h('tr',{key:e.id,className:e.obligation==='Optional'?'row-optional':''},keys.map(function(k){return h('td',{key:k,className:cx((k==='kw'||k==='date'||k==='status')&&'nowrap',k==='travel'&&'travel-print')},k==='status'?h('span',{className:'pr-status'},cell(k,e)):cell(k,e))}))}))),h('div',{className:'pr-note'},'Hinweis: Grundlage ist der Ausbildungsplan Stand 15.09.2026 (Anlage 2 zur Einladung des MLR vom 16.09.2026). Welche LEL-Lehrgänge zu besuchen sind, ergibt sich aus der gelben Markierung im Plan. Dienstreiseangaben sind persönliche Planungsdaten pro Termin.'),h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.14')))}
+function PrintReport(p){var c=p.config,events=p.events,cols=c.columns,ulb=C.requirementProgress(p.allEvents,'ulb8',40),caseEvent=p.allEvents.find(function(e){return e.requirementId==='caseprep2w'}),travel=T.travelAggregate(p.allEvents,'qualifier'),reiseOffen=offeneReiseTermine(p.allEvents).length,headers={kw:'KW',date:'Datum',title:'Termin',location:'Ort',status:'Status',travel:'Dienstreise',category:'Kategorie',participant:'Teilnehmer',notes:'Notizen'},keys=Object.keys(headers).filter(function(k){return cols[k]});function cell(k,e){if(k==='kw')return 'KW '+(e.sourceKW||C.computedKW(e));if(k==='date')return fmtRange(e);if(k==='title')return e.title;if(k==='location')return e.location||'–';if(k==='status')return statusLabel(e);if(k==='travel')return travelShort(e);if(k==='category')return e.category||'–';if(k==='participant')return roleLabel(e);if(k==='notes')return e.notes||'';return''}return h('section',{className:cx('print-report',c.density==='compact'&&'compact',!c.optionalShade&&'no-optional-shade')},h('div',{className:'pr-head'},h('div',{className:'pr-kicker'},'Laufbahnqualifizierung · Terminübersicht'),h('h1',null,c.title||'Persönlicher Terminplan'),h('div',{className:'pr-meta'},'Planstand 15.09.2026 · Ausdruck '+todayDE()+' · '+events.length+' Einträge')),c.includeSummary&&h('div',{className:'pr-summary'},h('div',{className:'pr-stat'},h('b',null,events.filter(function(e){return e.obligation==='Pflicht'}).length),h('span',null,'Pflichtblöcke in Auswahl')),h('div',{className:'pr-stat'},h('b',null,reiseOffen?reiseOffen:travel.ready+'/'+travel.required),h('span',null,reiseOffen?'Termine mit offener Reiseplanung':'Dienstreisen vollständig geplant')),h('div',{className:'pr-stat'},h('b',null,ulb.plannedDays+'/40'),h('span',null,'ULB-Arbeitstage geplant')),h('div',{className:'pr-stat'},h('b',null,caseEvent?'terminiert':'offen'),h('span',null,'2 Wochen Verwaltungsfall'))),h('table',null,h('thead',null,h('tr',null,keys.map(function(k){return h('th',{key:k},headers[k])}))),h('tbody',null,events.map(function(e){return h('tr',{key:e.id,className:e.obligation==='Optional'?'row-optional':''},keys.map(function(k){return h('td',{key:k,className:cx((k==='kw'||k==='date'||k==='status')&&'nowrap',k==='travel'&&'travel-print')},k==='status'?h('span',{className:'pr-status'},cell(k,e)):cell(k,e))}))}))),h('div',{className:'pr-note'},'Hinweis: Grundlage ist der Ausbildungsplan Stand 15.09.2026 (Anlage 2 zur Einladung des MLR vom 16.09.2026). Welche LEL-Lehrgänge zu besuchen sind, ergibt sich aus der gelben Markierung im Plan. Dienstreiseangaben sind persönliche Planungsdaten pro Termin.'),h('div',{className:'pr-footer'},h('span',null,'Laufbahnqualifizierung gD Landwirtschaft'),h('span',null,'Erstellt mit dem Terminplan der Laufbahnqualifizierung V2.15')))}
 
 class OptionsModal extends R.Component{
   constructor(p){super(p);this.state={draft:Object.assign({},p.settings,{selectedOptionalIds:(p.settings.selectedOptionalIds||[]).slice()})};this.save=this.save.bind(this)}
@@ -935,14 +936,14 @@ class App extends R.Component{
       h('main',{className:'bw-app bw-app--weit lq-inhalt',id:'inhalt'},
         h('div',{className:'lq-titelzeile'},
           h('div',null,h('div',{className:'eyebrow'},'Laufbahnqualifizierung · Qualifizierer'),h('h1',null,'Terminplan 2026/27')),
-          h(Badge,{kind:'neutral'},'V2.14 · Plan 15.09.2026')),
+          h(Badge,{kind:'neutral'},'V2.15 · Plan 15.09.2026')),
         h(Werkzeugleiste,{
           search:s.search,
           setSearch:function(v){self.setState({search:v,view:(v&&!mitFilter)?'overview':s.view})},
           openOptions:function(){self.setState({optionsOpen:true})},
           onNeu:function(){self.setState({creating:{id:uid(),title:'',start:'2027-01-01',end:'2027-01-01',sourceKW:'',category:'Sonstiges',obligation:'Pflicht',statusOrigin:'manual',relevance:'Qualifizierer',location:'',travel:{required:'open'},notes:''}})},
           onIcs:this.exportICS,onPdf:this.printPdf,onAbw:function(){self.setState({abwOpen:true})},
-          onBackup:function(){download('laufbahnqualifizierung_sicherung.json','application/json',JSON.stringify({version:'2.14',events:s.events,settings:s.settings},null,2))},
+          onBackup:function(){download('laufbahnqualifizierung_sicherung.json','application/json',JSON.stringify({version:'2.15',events:s.events,settings:s.settings},null,2))},
           onRestore:function(){if(self.datei)self.datei.click()}}),
         h('input',{type:'file',accept:'.json,application/json',className:'lq-sr',tabIndex:-1,'aria-hidden':'true',ref:function(n){self.datei=n},onChange:this.dateiGewaehlt}),
         mitFilter?h(FilterLeiste,{filter:s.filter,events:s.events,settings:settings,onChange:this.setFilter}):null,

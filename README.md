@@ -6,8 +6,7 @@ vollständig im Browser, ohne Server und ohne Internetverbindung.
 
 **Private Planungshilfe von Hannes Pix** – kein offizielles Angebot des
 Regierungspräsidiums Freiburg oder des Landes Baden-Württemberg. Die
-hinterlegte Planung (etwa die ULB-Abordnung) ist persönlich und teilweise noch
-in Absprache.
+hinterlegte Planung (etwa die ULB-Abordnung) ist persönlich.
 
 Gestaltet nach dem **Landes-CD Baden-Württemberg** (https://design.landbw.de)
 auf Basis der gemeinsamen Vorlage `Vorlage-Tool-im-Landesdesign`. Verbindlich
@@ -201,12 +200,15 @@ praktische Prüfung mit 1 Tag je Prüfling; in KW 10 endet die LQ am Donnerstag.
 Die zwei Wochen Prüfungsvorbereitung (KW 48–49/2027) ordnet der offizielle
 Plan der Stammdienststelle zu; sie werden deshalb getrennt ausgewiesen.
 
-Fest hinterlegt, aber **noch in Absprache** mit Referatsleitung, ULB und MLR:
-die ULB-Abordnung in vier Blöcken an der ULB Breisach (01.02.–19.02.,
-01.–05.03., 15.10.–05.11. und 22.–26.11.2027, zusammen 40 Arbeitstage ohne
-Feiertage) sowie die Prüfungsvorbereitung im Anschluss ebenfalls in Breisach.
-Wer die Termine löscht, bekommt sie beim nächsten Laden nicht wieder; „Plan
-wiederherstellen“ unter Optionen holt sie zurück.
+Fest hinterlegt und mit der ULB Breisach abgestimmt (Rückmeldung vom
+27.10.2026): die ULB-Abordnung in zwei Blöcken an der Außenstelle Breisach des
+Landratsamts Breisgau-Hochschwarzwald – Block 1 vom 05.04. bis 30.04.2027
+(KW 14–17), Block 2 vom 15.10. bis 05.11. und vom 22. bis 26.11.2027, zusammen
+40 Arbeitstage ohne Feiertage. Etwa einen Monat vor jedem Block sind die
+Details mit der Außenstelle zu klären (Fristen in der Aufgabenliste). Die
+Prüfungsvorbereitung im Anschluss ebenfalls in Breisach ist noch in Absprache.
+Wer Plantermine löscht, bekommt sie beim nächsten Laden nicht wieder;
+„Ausgangsstand wiederherstellen“ unter Optionen holt sie zurück.
 
 Beim ersten Aufruf einer neuen Planversion bleiben persönliche Eintragungen
 erhalten: eigene Termine, ULB-Blöcke, Verwaltungsfall und die Reiseplanung je
